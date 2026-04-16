@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greek Colours</title>
+<style>
+  :root {
+    --bg: #f7f6f3;
+    --surface: #ffffff;
+    --surface2: #f0ede8;
+    --text: #1a1a18;
+    --text2: #6b6b66;
+    --text3: #a0a09a;
+    --border: rgba(0,0,0,0.10);
+    --border2: rgba(0,0,0,0.18);
+    --r-md: 10px;
+    --r-lg: 14px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a18;
+      --surface: #242422;
+      --surface2: #2e2e2b;
+      --text: #f0ede8;
+      --text2: #a0a09a;
+      --text3: #66665f;
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.15);
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 1rem 4rem;
+  }
+  .app { width: 100%; max-width: 560px; }
+
+  h1 { font-size: 22px; font-weight: 600; margin-bottom: .25rem; }
+  .subtitle { font-size: 14px; color: var(--text2); margin-bottom: 1.75rem; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 6px; margin-bottom: 1.5rem; }
+  .tab { flex: 1; padding: .5rem; border: 0.5px solid var(--border2); border-radius: var(--r-md); background: var(--surface); color: var(--text2); font-size: 13px; cursor: pointer; text-align: center; transition: all .15s; }
+  .tab.active { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 500; }
+
+  /* Score bar */
+  .score-bar { display: flex; gap: 10px; margin-bottom: 1.5rem; }
+  .score-card { flex: 1; background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--r-md); padding: .65rem; text-align: center; }
+  .score-label { font-size: 11px; color: var(--text2); margin-bottom: 3px; }
+  .score-val { font-size: 20px; font-weight: 600; }
+
+  /* Word card */
+  .word-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    margin-bottom: 1.25rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .colour-swatch {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    border: 2px solid rgba(0,0,0,0.10);
+    transition: transform .2s;
+  }
+  .word-hint { font-size: 13px; color: var(--text2); margin-bottom: .4rem; }
+  .word-display { font-size: 32px; font-weight: 600; margin-bottom: .3rem; }
+  .word-sub { font-size: 13px; color: var(--text3); }
+  .retry-badge {
+    position: absolute; top: 12px; right: 12px;
+    background: #FAEEDA; color: #854F0B;
+    font-size: 11px; font-weight: 500;
+    padding: 3px 9px; border-radius: 20px;
+  }
+
+  /* Choices */
+  .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
+  .choice-btn {
+    padding: .7rem .5rem;
+    border: 0.5px solid var(--border2);
+    border-radius: var(--r-md);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 15px;
+    cursor: pointer;
+    transition: background .12s, border-color .12s;
+    font-family: inherit;
+    text-align: center;
+  }
+  .choice-btn:hover:not(:disabled) { background: var(--surface2); }
+  .choice-btn.correct { background: #EAF3DE; border-color: #639922; color: #3B6D11; }
+  .choice-btn.wrong   { background: #FCEBEB; border-color: #E24B4A; color: #A32D2D; }
+  .choice-btn.reveal  { background: #EAF3DE; border-color: #639922; color: #3B6D11; }
+
+  /* Feedback */
+  .feedback { border-radius: var(--r-md); padding: .875rem 1rem; margin-bottom: 1rem; font-size: 14px; line-height: 1.6; }
+  .feedback.correct { background: #EAF3DE; color: #3B6D11; border: 0.5px solid #639922; }
+  .feedback.wrong   { background: #FCEBEB; color: #A32D2D; border: 0.5px solid #E24B4A; }
+
+  /* Buttons */
+  .next-btn {
+    width: 100%; padding: .75rem;
+    border: 0.5px solid var(--border2);
+    border-radius: var(--r-md);
+    background: var(--surface2);
+    color: var(--text);
+    font-size: 15px; cursor: pointer; font-family: inherit;
+  }
+  .next-btn:hover { background: var(--surface); }
+
+  .progress { font-size: 12px; color: var(--text3); text-align: center; margin-bottom: .5rem; }
+
+  /* Rule box */
+  .rule-box {
+    background: var(--surface2);
+    border-radius: var(--r-md);
+    padding: .875rem 1rem;
+    margin-bottom: 1.25rem;
+    font-size: 13px; color: var(--text2); line-height: 1.7;
+    border: 0.5px solid var(--border);
+  }
+  .rule-box strong { color: var(--text); font-weight: 500; }
+
+  /* Reference sheet */
+  .ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .ref-row {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--r-md);
+    padding: .6rem .875rem;
+    font-size: 14px;
+  }
+  .ref-dot { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.10); }
+  .ref-gr { font-weight: 500; flex: 1; }
+  .ref-en { color: var(--text2); font-size: 12px; }
+
+  /* Finish */
+  .finish-screen { text-align: center; padding: 1.5rem; }
+  .finish-screen h2 { font-size: 22px; font-weight: 600; margin-bottom: .4rem; }
+  .mistake-item { background: #FCEBEB; border-radius: var(--r-md); padding: .65rem 1rem; margin-bottom: .4rem; font-size: 14px; color: #A32D2D; text-align: left; display: flex; align-items: center; gap: 10px; }
+  .restart-btn { margin-top: 1.25rem; padding: .75rem 2rem; border: 0.5px solid var(--border2); border-radius: var(--r-md); background: var(--surface2); color: var(--text); font-size: 15px; cursor: pointer; font-family: inherit; }
+
+  .ref-back-btn { margin-top: 1rem; padding: .75rem 2rem; border: 0.5px solid var(--border2); border-radius: var(--r-md); background: var(--surface2); color: var(--text); font-size: 15px; cursor: pointer; font-family: inherit; display: block; width: 100%; }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>🎨 Greek Colours</h1>
+  <p class="subtitle">Learn all the colours in Greek — wrong answers repeat until you get them right.</p>
+
+  <div class="tabs">
+    <div class="tab active" id="tab-n2g" onclick="switchMode('n2g')">Name → Greek</div>
+    <div class="tab" id="tab-g2n" onclick="switchMode('g2n')">Greek → Name</div>
+    <div class="tab" id="tab-swatch" onclick="switchMode('swatch')">Colour → Greek</div>
+    <div class="tab" id="tab-ref" onclick="switchMode('ref')">Reference</div>
+  </div>
+
+  <div class="score-bar" id="score-bar">
+    <div class="score-card"><div class="score-label">Correct</div><div class="score-val" id="sc">0</div></div>
+    <div class="score-card"><div class="score-label">Wrong</div><div class="score-val" id="sw">0</div></div>
+    <div class="score-card"><div class="score-label">Streak</div><div class="score-val" id="ss">0</div></div>
+  </div>
+
+  <!-- Quiz view -->
+  <div id="quiz-view">
+    <div class="rule-box" id="rule-text">Choose a mode above to start.</div>
+    <div class="progress" id="prog">Question 1</div>
+    <div class="word-card" id="word-card">
+      <div class="colour-swatch" id="swatch" style="display:none"></div>
+      <div class="word-hint" id="qhint"></div>
+      <div class="word-display" id="wd">—</div>
+      <div class="word-sub" id="wsub"></div>
+      <div class="retry-badge" id="retry-badge" style="display:none">↩ Try again</div>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="fb" style="display:none"></div>
+    <button class="next-btn" id="nb" style="display:none" onclick="nextQ()">Next →</button>
+  </div>
+
+  <!-- Reference view -->
+  <div id="ref-view" style="display:none">
+    <div class="ref-grid" id="ref-grid"></div>
+    <button class="ref-back-btn" onclick="backFromRef()">Back to practice →</button>
+  </div>
+
+  <!-- Finish view -->
+  <div id="finish-view" style="display:none">
+    <div class="finish-screen">
+      <h2 id="fin-msg"></h2>
+      <p id="fin-score" style="color:var(--text2);font-size:15px;margin-bottom:.5rem"></p>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:1rem" id="fin-sub"></p>
+      <div id="fin-mistakes"></div>
+      <button class="restart-btn" onclick="restartQuiz()">Practice again →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const COLOURS = [
+  { gr: 'κόκκινο',   en: 'red',     hex: '#E53935' },
+  { gr: 'μπλε',      en: 'blue',    hex: '#1E88E5' },
+  { gr: 'πράσινο',   en: 'green',   hex: '#43A047' },
+  { gr: 'κίτρινο',   en: 'yellow',  hex: '#FDD835' },
+  { gr: 'πορτοκαλί', en: 'orange',  hex: '#FB8C00' },
+  { gr: 'μωβ',       en: 'purple',  hex: '#8E24AA' },
+  { gr: 'ροζ',       en: 'pink',    hex: '#EC407A' },
+  { gr: 'καφέ',      en: 'brown',   hex: '#795548' },
+  { gr: 'γκρι',      en: 'grey',    hex: '#757575' },
+  { gr: 'άσπρο',     en: 'white',   hex: '#E0E0E0' },
+  { gr: 'μαύρο',     en: 'black',   hex: '#212121' },
+  { gr: 'τυρκουάζ',  en: 'turquoise', hex: '#00ACC1' },
+  { gr: 'χρυσό',     en: 'gold',    hex: '#F9A825' },
+  { gr: 'ασημί',     en: 'silver',  hex: '#9E9E9E' },
+  { gr: 'μπεζ',      en: 'beige',   hex: '#D7CCC8' },
+  { gr: 'κρεμ',      en: 'cream',   hex: '#FFF8E1' },
+];
+
+let curMode = 'n2g';
+let q = [], idx = 0, cor = 0, wr = 0, str = 0, mist = [], answered = false;
+
+function shuf(a) { for (let i = a.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+function switchMode(m) {
+  ['tab-n2g','tab-g2n','tab-swatch','tab-ref'].forEach(id => document.getElementById(id).classList.remove('active'));
+  document.getElementById('ref-view').style.display = 'none';
+  document.getElementById('finish-view').style.display = 'none';
+  document.getElementById('score-bar').style.display = 'flex';
+  if (m === 'ref') {
+    document.getElementById('tab-ref').classList.add('active');
+    document.getElementById('quiz-view').style.display = 'none';
+    document.getElementById('score-bar').style.display = 'none';
+    buildRef();
+    document.getElementById('ref-view').style.display = 'block';
+    return;
+  }
+  curMode = m;
+  document.getElementById('tab-' + m).classList.add('active');
+  document.getElementById('quiz-view').style.display = 'block';
+  startQuiz();
+}
+
+function backFromRef() {
+  document.getElementById('ref-view').style.display = 'none';
+  document.getElementById('score-bar').style.display = 'flex';
+  document.getElementById('quiz-view').style.display = 'block';
+  document.getElementById('tab-' + curMode).classList.add('active');
+  document.getElementById('tab-ref').classList.remove('active');
+}
+
+function buildRef() {
+  const grid = document.getElementById('ref-grid');
+  grid.innerHTML = '';
+  COLOURS.forEach(c => {
+    const row = document.createElement('div');
+    row.className = 'ref-row';
+    row.innerHTML = '<div class="ref-dot" style="background:'+c.hex+'"></div><span class="ref-gr">'+c.gr+'</span><span class="ref-en">'+c.en+'</span>';
+    grid.appendChild(row);
+  });
+}
+
+function startQuiz() {
+  q = shuf([...COLOURS]);
+  idx = 0; cor = 0; wr = 0; str = 0; mist = [];
+  document.getElementById('sc').textContent = 0;
+  document.getElementById('sw').textContent = 0;
+  document.getElementById('ss').textContent = 0;
+  document.getElementById('finish-view').style.display = 'none';
+  document.getElementById('quiz-view').style.display = 'block';
+
+  const rules = {
+    'n2g':    '<strong>English → Greek:</strong> See the colour name in English, choose the correct Greek word.',
+    'g2n':    '<strong>Greek → English:</strong> See the Greek word, choose the correct English name.',
+    'swatch': '<strong>Colour swatch → Greek:</strong> See the colour, choose the Greek word. No English hints!',
+  };
+  document.getElementById('rule-text').innerHTML = rules[curMode] + ' &nbsp;·&nbsp; Wrong answers repeat until you get them right.';
+  showQ();
+}
+
+function restartQuiz() { startQuiz(); }
+
+function showQ() {
+  answered = false;
+  const c = q[idx];
+  const isRetry = c._retry || false;
+
+  document.getElementById('retry-badge').style.display = isRetry ? 'block' : 'none';
+  document.getElementById('fb').style.display = 'none';
+  document.getElementById('nb').style.display = 'none';
+  document.getElementById('prog').textContent = 'Question ' + (idx + 1) + ' of ' + q.length;
+
+  const sw = document.getElementById('swatch');
+  const wd = document.getElementById('wd');
+  const wsub = document.getElementById('wsub');
+  const qhint = document.getElementById('qhint');
+
+  // Always show colour swatch in the question card
+  sw.style.display = 'block';
+  sw.style.background = c.hex;
+
+  if (curMode === 'swatch') {
+    qhint.textContent = 'What is this colour in Greek?';
+    wd.textContent = '';
+    wsub.textContent = '';
+  } else if (curMode === 'n2g') {
+    qhint.textContent = 'How do you say this in Greek?';
+    wd.textContent = c.en;
+    wsub.textContent = '';
+  } else {
+    qhint.textContent = 'What colour is this?';
+    wd.textContent = c.gr;
+    wsub.textContent = '';
+  }
+
+  // Build 4 choices — text only, no colour hints
+  let pool = shuf(COLOURS.filter(x => x.gr !== c.gr)).slice(0, 3);
+  let opts = shuf([c, ...pool]);
+
+  const cc = document.getElementById('choices');
+  cc.innerHTML = '';
+  opts.forEach(opt => {
+    const b = document.createElement('button');
+    b.className = 'choice-btn';
+    // Answer buttons show text only — no colour dots
+    b.textContent = (curMode === 'n2g' || curMode === 'swatch') ? opt.gr : opt.en;
+    b.onclick = () => pickAns(opt, c);
+    cc.appendChild(b);
+  });
+}
+
+function pickAns(chosen, correct) {
+  if (answered) return;
+  answered = true;
+
+  const isCorrect = chosen.gr === correct.gr;
+  const correctLabel = (curMode === 'n2g' || curMode === 'swatch') ? correct.gr : correct.en;
+  const chosenLabel  = (curMode === 'n2g' || curMode === 'swatch') ? chosen.gr  : chosen.en;
+  const btns = document.querySelectorAll('.choice-btn');
+  btns.forEach(b => {
+    b.disabled = true;
+    if (b.textContent.trim() === correctLabel) {
+      b.classList.add(isCorrect ? 'correct' : 'reveal');
+    } else if (b.textContent.trim() === chosenLabel && !isCorrect) {
+      b.classList.add('wrong');
+    }
+  });
+
+  const fb = document.getElementById('fb');
+  fb.style.display = 'block';
+
+  if (isCorrect) {
+    cor++; str++;
+    fb.className = 'feedback correct';
+    fb.innerHTML = '✓ Correct! <strong>' + correct.gr + '</strong> = ' + correct.en;
+    document.getElementById('nb').style.display = 'block';
+  } else {
+    wr++; str = 0;
+    fb.className = 'feedback wrong';
+    fb.innerHTML = '✗ Not quite — it\'s <strong>' + correct.gr + '</strong> (' + correct.en + '). Try again!';
+    mist.push(correct);
+    // Re-queue this word immediately after current position
+    const retry = { ...correct, _retry: true };
+    q.splice(idx + 1, 0, retry);
+    document.getElementById('nb').style.display = 'block';
+    document.getElementById('nb').textContent = 'Try again →';
+  }
+
+  document.getElementById('sc').textContent = cor;
+  document.getElementById('sw').textContent = wr;
+  document.getElementById('ss').textContent = str;
+}
+
+function nextQ() {
+  document.getElementById('nb').textContent = 'Next →';
+  idx++;
+  if (idx >= q.length) showFinish();
+  else showQ();
+}
+
+function showFinish() {
+  document.getElementById('quiz-view').style.display = 'none';
+  const tot = cor + wr;
+  const pct = tot ? Math.round(cor / tot * 100) : 0;
+  document.getElementById('fin-msg').textContent = pct >= 90 ? 'Excellent! 🎉' : pct >= 70 ? 'Good progress! 👍' : 'Keep practicing! 📚';
+  document.getElementById('fin-score').textContent = cor + ' correct out of ' + tot + ' attempts (' + pct + '%)';
+  document.getElementById('fin-sub').textContent = 'You covered all ' + COLOURS.length + ' colours.';
+
+  const mm = document.getElementById('fin-mistakes');
+  mm.innerHTML = '';
+  if (mist.length) {
+    const hdr = document.createElement('p');
+    hdr.style.cssText = 'font-size:13px;color:var(--text2);margin-bottom:8px;text-align:left';
+    hdr.textContent = 'Colours that gave you trouble:';
+    mm.appendChild(hdr);
+    const seen = new Set();
+    mist.forEach(c => {
+      if (!seen.has(c.gr)) {
+        seen.add(c.gr);
+        const d = document.createElement('div');
+        d.className = 'mistake-item';
+        d.innerHTML = '<div class="ref-dot" style="background:' + c.hex + '"></div><strong>' + c.gr + '</strong> = ' + c.en;
+        mm.appendChild(d);
+      }
+    });
+  } else {
+    mm.innerHTML = '<p style="color:#3B6D11;font-size:14px;margin-top:.5rem">Perfect — no mistakes!</p>';
+  }
+  document.getElementById('finish-view').style.display = 'block';
+}
+
+// Start on load
+switchMode('n2g');
+</script>
+</body>
+</html>

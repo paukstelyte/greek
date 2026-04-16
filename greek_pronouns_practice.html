@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greek Pronouns</title>
+<style>
+  :root {
+    --bg: #f7f6f3; --surface: #ffffff; --surface2: #f0ede8;
+    --text: #1a1a18; --text2: #6b6b66; --text3: #a0a09a;
+    --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+    --r-md: 10px; --r-lg: 14px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a18; --surface: #242422; --surface2: #2e2e2b;
+      --text: #f0ede8; --text2: #a0a09a; --text3: #66665f;
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.15);
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; justify-content: center; padding: 2rem 1rem 4rem; }
+  .app { width: 100%; max-width: 600px; }
+  h1 { font-size: 20px; font-weight: 500; margin-bottom: .25rem; }
+  .subtitle { font-size: 14px; color: var(--text2); margin-bottom: 1.75rem; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 1.5rem; }
+  .tab { flex: 1; padding: .5rem; border: 0.5px solid var(--border2); border-radius: var(--r-md); background: var(--surface); color: var(--text2); font-size: 13px; cursor: pointer; text-align: center; transition: all .15s; }
+  .tab.active { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 500; }
+  .score-bar { display: flex; gap: 10px; margin-bottom: 1.5rem; }
+  .score-card { flex: 1; background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--r-md); padding: .65rem; text-align: center; }
+  .score-label { font-size: 11px; color: var(--text2); margin-bottom: 3px; }
+  .score-val { font-size: 20px; font-weight: 500; }
+  .word-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--r-lg); padding: 1.75rem 1.5rem; text-align: center; margin-bottom: 1.25rem; }
+  .word-hint { font-size: 13px; color: var(--text2); margin-bottom: .5rem; }
+  .word-display { font-size: 32px; font-weight: 500; margin-bottom: .4rem; }
+  .word-sub { font-size: 13px; color: var(--text3); }
+  .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
+  .choice-btn { padding: .7rem .5rem; border: 0.5px solid var(--border2); border-radius: var(--r-md); background: var(--surface); color: var(--text); font-size: 15px; cursor: pointer; font-family: inherit; text-align: center; }
+  .choice-btn:hover:not(:disabled) { background: var(--surface2); }
+  .choice-btn.correct { background: #EAF3DE; border-color: #639922; color: #3B6D11; }
+  .choice-btn.wrong { background: #FCEBEB; border-color: #E24B4A; color: #A32D2D; }
+  .choice-btn.reveal { background: #EAF3DE; border-color: #639922; color: #3B6D11; }
+  .feedback { border-radius: var(--r-md); padding: .875rem 1rem; margin-bottom: 1rem; font-size: 14px; line-height: 1.6; }
+  .feedback.correct { background: #EAF3DE; color: #3B6D11; border: 0.5px solid #639922; }
+  .feedback.wrong { background: #FCEBEB; color: #A32D2D; border: 0.5px solid #E24B4A; }
+  .next-btn { width: 100%; padding: .75rem; border: 0.5px solid var(--border2); border-radius: var(--r-md); background: var(--surface2); color: var(--text); font-size: 15px; cursor: pointer; font-family: inherit; }
+  .rule-box { background: var(--surface2); border-radius: var(--r-md); padding: .875rem 1rem; margin-bottom: 1.25rem; font-size: 13px; color: var(--text2); line-height: 1.7; border: 0.5px solid var(--border); }
+  .rule-box strong { color: var(--text); font-weight: 500; }
+  .progress { font-size: 12px; color: var(--text3); text-align: center; margin-bottom: .5rem; }
+  .cheat-sheet { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1rem; }
+  .cs-box { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--r-lg); padding: 1rem 1.25rem; }
+  .cs-title { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: .6rem; text-transform: uppercase; letter-spacing: .05em; }
+  .cs-row { display: flex; justify-content: space-between; font-size: 14px; padding: 3px 0; border-bottom: 0.5px solid var(--border); }
+  .cs-row:last-child { border-bottom: none; }
+  .cs-gr { font-weight: 500; }
+  .cs-en { color: var(--text2); font-size: 13px; }
+  .finish-screen { text-align: center; padding: 1.5rem; }
+  .finish-screen h2 { font-size: 22px; font-weight: 500; margin-bottom: .5rem; }
+  .mistake-item { background: #FCEBEB; border-radius: var(--r-md); padding: .65rem 1rem; margin-bottom: .4rem; font-size: 14px; color: #A32D2D; text-align: left; }
+  .restart-btn { margin-top: 1.25rem; padding: .75rem 2rem; border: 0.5px solid var(--border2); border-radius: var(--r-md); background: var(--surface2); color: var(--text); font-size: 15px; cursor: pointer; font-family: inherit; }
+  .ref-back-btn { margin-top: 1rem; padding: .75rem 2rem; border: 0.5px solid var(--border2); border-radius: var(--r-md); background: var(--surface2); color: var(--text); font-size: 15px; cursor: pointer; font-family: inherit; display: block; width: 100%; }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>🗣️ Greek Pronouns</h1>
+  <p class="subtitle">Learn subject and possessive pronouns — wrong answers repeat until you get them right.</p>
+  <div class="tabs">
+    <div class="tab active" id="tab-sub" onclick="switchMode('subject')">Subject pronouns</div>
+    <div class="tab" id="tab-poss" onclick="switchMode('possessive')">Possessive pronouns</div>
+    <div class="tab" id="tab-ref" onclick="switchMode('ref')">Reference sheet</div>
+  </div>
+  <div class="score-bar" id="score-bar">
+    <div class="score-card"><div class="score-label">Correct</div><div class="score-val" id="sc">0</div></div>
+    <div class="score-card"><div class="score-label">Wrong</div><div class="score-val" id="sw">0</div></div>
+    <div class="score-card"><div class="score-label">Streak</div><div class="score-val" id="ss">0</div></div>
+  </div>
+  <div id="quiz-view">
+    <div class="rule-box" id="rule-box"></div>
+    <div class="progress" id="prog">Question 1</div>
+    <div class="word-card">
+      <div class="word-hint" id="qhint"></div>
+      <div class="word-display" id="wd">—</div>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="fb" style="display:none"></div>
+    <button class="next-btn" id="nb" style="display:none" onclick="nextQ()">Next →</button>
+  </div>
+  <div id="ref-view" style="display:none">
+    <div class="cheat-sheet">
+      <div class="cs-box">
+        <div class="cs-title">Subject pronouns</div>
+        <div class="cs-row"><span class="cs-gr">εγώ</span><span class="cs-en">I</span></div>
+        <div class="cs-row"><span class="cs-gr">εσύ</span><span class="cs-en">you (sing.)</span></div>
+        <div class="cs-row"><span class="cs-gr">αυτός</span><span class="cs-en">he</span></div>
+        <div class="cs-row"><span class="cs-gr">αυτή</span><span class="cs-en">she</span></div>
+        <div class="cs-row"><span class="cs-gr">αυτό</span><span class="cs-en">it</span></div>
+        <div class="cs-row"><span class="cs-gr">εμείς</span><span class="cs-en">we</span></div>
+        <div class="cs-row"><span class="cs-gr">εσείς</span><span class="cs-en">you (pl.)</span></div>
+        <div class="cs-row"><span class="cs-gr">αυτοί</span><span class="cs-en">they (m)</span></div>
+        <div class="cs-row"><span class="cs-gr">αυτές</span><span class="cs-en">they (f)</span></div>
+        <div class="cs-row"><span class="cs-gr">αυτά</span><span class="cs-en">they (n)</span></div>
+      </div>
+      <div class="cs-box">
+        <div class="cs-title">Possessive pronouns</div>
+        <div class="cs-row"><span class="cs-gr">μου</span><span class="cs-en">my</span></div>
+        <div class="cs-row"><span class="cs-gr">σου</span><span class="cs-en">your (sing.)</span></div>
+        <div class="cs-row"><span class="cs-gr">του</span><span class="cs-en">his / its</span></div>
+        <div class="cs-row"><span class="cs-gr">της</span><span class="cs-en">her</span></div>
+        <div class="cs-row"><span class="cs-gr">μας</span><span class="cs-en">our</span></div>
+        <div class="cs-row"><span class="cs-gr">σας</span><span class="cs-en">your (pl.)</span></div>
+        <div class="cs-row"><span class="cs-gr">τους</span><span class="cs-en">their</span></div>
+      </div>
+    </div>
+    <button class="ref-back-btn" onclick="backToQuiz()">Back to practice →</button>
+  </div>
+  <div id="finish-view" style="display:none">
+    <div class="finish-screen">
+      <h2 id="fin-msg"></h2>
+      <p id="fin-score" style="color:var(--text2);font-size:15px;"></p>
+      <div id="fin-mistakes" style="margin-top:1rem;text-align:left"></div>
+      <button class="restart-btn" onclick="restartQuiz()">Practice again →</button>
+    </div>
+  </div>
+</div>
+<script>
+const SUBJECT=[
+  {gr:'εγώ',en:'I',wrong:['εσύ','εμείς','αυτός']},
+  {gr:'εσύ',en:'you (singular)',wrong:['εγώ','εσείς','αυτή']},
+  {gr:'αυτός',en:'he',wrong:['αυτή','αυτό','εγώ']},
+  {gr:'αυτή',en:'she',wrong:['αυτός','αυτό','εσύ']},
+  {gr:'αυτό',en:'it',wrong:['αυτός','αυτή','αυτά']},
+  {gr:'εμείς',en:'we',wrong:['εσείς','εγώ','αυτοί']},
+  {gr:'εσείς',en:'you (plural)',wrong:['εμείς','εσύ','αυτές']},
+  {gr:'αυτοί',en:'they (masculine)',wrong:['αυτές','αυτά','εμείς']},
+  {gr:'αυτές',en:'they (feminine)',wrong:['αυτοί','αυτά','εσείς']},
+  {gr:'αυτά',en:'they (neuter)',wrong:['αυτοί','αυτές','αυτό']},
+];
+const POSSESSIVE=[
+  {gr:'μου',en:'my',wrong:['σου','μας','της']},
+  {gr:'σου',en:'your (singular)',wrong:['μου','σας','του']},
+  {gr:'του',en:'his / its',wrong:['της','μου','τους']},
+  {gr:'της',en:'her',wrong:['του','σου','μας']},
+  {gr:'μας',en:'our',wrong:['σας','μου','τους']},
+  {gr:'σας',en:'your (plural)',wrong:['μας','σου','τους']},
+  {gr:'τους',en:'their',wrong:['μας','σας','του']},
+];
+let mode='subject',q=[],idx=0,cor=0,wr=0,str=0,mist=[],answered=false,mc={};
+function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function switchMode(m){
+  ['tab-sub','tab-poss','tab-ref'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  if(m==='ref'){
+    document.getElementById('tab-ref').classList.add('active');
+    document.getElementById('quiz-view').style.display='none';
+    document.getElementById('finish-view').style.display='none';
+    document.getElementById('score-bar').style.display='none';
+    document.getElementById('ref-view').style.display='block';
+    return;
+  }
+  document.getElementById('ref-view').style.display='none';
+  document.getElementById('finish-view').style.display='none';
+  mode=m;
+  if(m==='subject'){document.getElementById('tab-sub').classList.add('active');document.getElementById('rule-box').innerHTML='<strong>Subject pronouns</strong> are used as the subject of a sentence. Greek has 10 forms.';}
+  else{document.getElementById('tab-poss').classList.add('active');document.getElementById('rule-box').innerHTML='<strong>Possessive pronouns</strong> follow the noun: <em>το σπίτι μου</em> (my house).';}
+  startQuiz();
+}
+function startQuiz(){
+  const pool=mode==='subject'?SUBJECT:POSSESSIVE;
+  q=shuf([...pool]);idx=0;cor=0;wr=0;str=0;mist=[];mc={};
+  document.getElementById('sc').textContent=0;document.getElementById('sw').textContent=0;document.getElementById('ss').textContent=0;
+  document.getElementById('score-bar').style.display='flex';document.getElementById('quiz-view').style.display='block';document.getElementById('finish-view').style.display='none';
+  showQ();
+}
+function restartQuiz(){startQuiz();}
+function backToQuiz(){document.getElementById('ref-view').style.display='none';document.getElementById('score-bar').style.display='flex';document.getElementById('quiz-view').style.display='block';if(mode==='subject')document.getElementById('tab-sub').classList.add('active');else document.getElementById('tab-poss').classList.add('active');document.getElementById('tab-ref').classList.remove('active');}
+function showQ(){
+  answered=false;const item=q[idx];const dir=Math.random()<0.5?'gr2en':'en2gr';q[idx]._dir=dir;
+  if(dir==='gr2en'){document.getElementById('qhint').textContent='What does this mean in English?';document.getElementById('wd').textContent=item.gr;}
+  else{document.getElementById('qhint').textContent='What is the Greek pronoun for:';document.getElementById('wd').textContent=item.en;}
+  document.getElementById('prog').textContent='Question '+(idx+1)+' of '+q.length;
+  document.getElementById('fb').style.display='none';document.getElementById('nb').style.display='none';
+  const pool=mode==='subject'?SUBJECT:POSSESSIVE;let opts;
+  if(dir==='gr2en'){const w3=shuf(pool.filter(p=>p.en!==item.en)).slice(0,3).map(p=>p.en);opts=shuf([item.en,...w3]);}
+  else{const w3=shuf(pool.filter(p=>p.gr!==item.gr)).slice(0,3).map(p=>p.gr);opts=shuf([item.gr,...w3]);}
+  const cc=document.getElementById('choices');cc.innerHTML='';
+  opts.forEach(opt=>{const b=document.createElement('button');b.className='choice-btn';b.textContent=opt;b.onclick=()=>pickAns(opt,item,dir);cc.appendChild(b);});
+}
+function pickAns(chosen,item,dir){
+  if(answered)return;answered=true;
+  const correct=dir==='gr2en'?item.en:item.gr;
+  document.querySelectorAll('.choice-btn').forEach(b=>{b.disabled=true;if(b.textContent===correct)b.classList.add(chosen===correct?'correct':'reveal');else if(b.textContent===chosen&&chosen!==correct)b.classList.add('wrong');});
+  const fb=document.getElementById('fb');fb.style.display='block';
+  if(chosen===correct){cor++;str++;fb.className='feedback correct';fb.innerHTML='✓ Correct! <strong>'+item.gr+'</strong> = '+item.en;}
+  else{wr++;str=0;fb.className='feedback wrong';fb.innerHTML='✗ It\'s <strong>'+item.gr+'</strong> = '+item.en;mist.push(item);mc[item.gr]=(mc[item.gr]||0)+1;if(mc[item.gr]<=2)q.push(item);}
+  document.getElementById('sc').textContent=cor;document.getElementById('sw').textContent=wr;document.getElementById('ss').textContent=str;
+  document.getElementById('nb').style.display='block';
+}
+function nextQ(){idx++;if(idx>=q.length)showFinish();else showQ();}
+function showFinish(){
+  document.getElementById('quiz-view').style.display='none';const tot=cor+wr,pct=tot?Math.round(cor/tot*100):0;
+  document.getElementById('fin-msg').textContent=pct>=90?'Excellent! 🎉':pct>=70?'Good progress! 👍':'Keep practicing! 📚';
+  document.getElementById('fin-score').textContent=cor+' correct out of '+tot+' ('+pct+'%)';
+  const mm=document.getElementById('fin-mistakes');mm.innerHTML='';
+  if(mist.length){const hdr=document.createElement('p');hdr.style.cssText='font-size:13px;color:var(--text2);margin-bottom:8px';hdr.textContent='Words to review:';mm.appendChild(hdr);const seen=new Set();mist.forEach(m=>{if(!seen.has(m.gr)){seen.add(m.gr);const d=document.createElement('div');d.className='mistake-item';d.innerHTML='<strong>'+m.gr+'</strong> = '+m.en;mm.appendChild(d);}});}
+  else{mm.innerHTML='<p style="color:#3B6D11;font-size:14px">Perfect round!</p>';}
+  document.getElementById('finish-view').style.display='block';
+}
+switchMode('subject');
+</script>
+</body>
+</html>

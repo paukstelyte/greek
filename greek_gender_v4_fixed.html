@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greek Gender Practice</title>
+<style>
+  :root {
+    --color-background-primary: #ffffff;
+    --color-background-secondary: #f5f5f3;
+    --color-text-primary: #1a1a1a;
+    --color-text-secondary: #666660;
+    --color-text-tertiary: #999994;
+    --color-border-tertiary: rgba(0,0,0,0.10);
+    --color-border-secondary: rgba(0,0,0,0.18);
+    --color-border-primary: rgba(0,0,0,0.28);
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-background-primary: #1e1e1c;
+      --color-background-secondary: #2a2a28;
+      --color-text-primary: #f0ede8;
+      --color-text-secondary: #a0a09a;
+      --color-text-tertiary: #6a6a65;
+      --color-border-tertiary: rgba(255,255,255,0.08);
+      --color-border-secondary: rgba(255,255,255,0.14);
+      --color-border-primary: rgba(255,255,255,0.22);
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+  .app { width: 100%; max-width: 600px; }
+  .score-bar { display: flex; gap: 12px; margin-bottom: 1.5rem; }
+  .score-card { flex: 1; background: var(--color-background-primary); border-radius: var(--border-radius-md); padding: .75rem; text-align: center; border: 0.5px solid var(--color-border-tertiary); }
+  .score-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .score-val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .word-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 2rem 1.5rem; text-align: center; margin-bottom: 1.5rem; }
+  .word-hint { font-size: 13px; color: var(--color-text-secondary); margin-bottom: .5rem; }
+  .word-display { font-size: 32px; font-weight: 500; color: var(--color-text-primary); margin-bottom: .5rem; }
+  .word-meaning { font-size: 13px; color: var(--color-text-tertiary); }
+  .choices { display: flex; gap: 10px; margin-bottom: 1rem; }
+  .choice-btn { flex: 1; padding: .75rem; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); font-size: 18px; cursor: pointer; transition: background .15s; font-family: var(--font-sans); }
+  .choice-btn:hover { background: var(--color-background-secondary); }
+  .choice-btn.correct { background: #EAF3DE; border-color: #639922; color: #3B6D11; }
+  .choice-btn.wrong { background: #FCEBEB; border-color: #E24B4A; color: #A32D2D; }
+  .choice-btn.reveal { background: #EAF3DE; border-color: #639922; color: #3B6D11; }
+  .feedback { border-radius: var(--border-radius-md); padding: .875rem 1rem; margin-bottom: 1rem; font-size: 14px; line-height: 1.6; }
+  .feedback.correct { background: #EAF3DE; color: #3B6D11; border: 0.5px solid #639922; }
+  .feedback.wrong { background: #FCEBEB; color: #A32D2D; border: 0.5px solid #E24B4A; }
+  .next-btn { width: 100%; padding: .75rem; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 15px; cursor: pointer; font-family: var(--font-sans); }
+  .next-btn:hover { background: var(--color-background-primary); }
+  .rule-box { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: .875rem 1rem; margin-bottom: 1.5rem; font-size: 13px; color: var(--color-text-secondary); line-height: 1.7; border: 0.5px solid var(--color-border-tertiary); }
+  .rule-box strong { color: var(--color-text-primary); font-weight: 500; }
+  .progress { font-size: 12px; color: var(--color-text-tertiary); text-align: center; margin-bottom: .5rem; }
+  .finish-screen { text-align: center; padding: 2rem; }
+  .finish-screen h2 { font-size: 22px; font-weight: 500; margin-bottom: .5rem; }
+  .mistakes-section { margin-top: 1.5rem; text-align: left; }
+  .mistake-item { background: #FCEBEB; border-radius: var(--border-radius-md); padding: .75rem 1rem; margin-bottom: .5rem; font-size: 14px; color: #A32D2D; }
+  .restart-btn { margin-top: 1.5rem; padding: .75rem 2rem; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 15px; cursor: pointer; font-family: var(--font-sans); }
+  h1 { font-size: 20px; font-weight: 500; margin-bottom: 1.5rem; color: var(--color-text-primary); }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>🇬🇷 Greek Gender Practice</h1>
+
+  <div class="score-bar" id="score-bar">
+    <div class="score-card"><div class="score-label">Correct</div><div class="score-val" id="sc">0</div></div>
+    <div class="score-card"><div class="score-label">Wrong</div><div class="score-val" id="sw">0</div></div>
+    <div class="score-card"><div class="score-label">Streak</div><div class="score-val" id="ss">0</div></div>
+  </div>
+
+  <div id="quiz-view">
+    <div class="rule-box"><strong>ο</strong> masculine → -ος, -ας, -ης &nbsp;|&nbsp; <strong>η</strong> feminine → -η, -α, -ση &nbsp;|&nbsp; <strong>το</strong> neuter → -ο, -ι, -μα</div>
+    <div class="progress" id="prog">Word 1 of 25</div>
+    <div class="word-card">
+      <div class="word-hint">Choose the correct article:</div>
+      <div class="word-display" id="wd">—</div>
+      <div class="word-meaning" id="wm"></div>
+    </div>
+    <div class="choices">
+      <button class="choice-btn" id="bm" onclick="ans('m')">ο</button>
+      <button class="choice-btn" id="bf" onclick="ans('f')">η</button>
+      <button class="choice-btn" id="bn" onclick="ans('n')">το</button>
+    </div>
+    <div class="feedback" id="fb" style="display:none"></div>
+    <button class="next-btn" id="nb" style="display:none" onclick="nextWord()">Next word →</button>
+  </div>
+
+  <div id="finish-view" style="display:none">
+    <div class="finish-screen">
+      <h2 id="fin-msg"></h2>
+      <p id="fin-score" style="color:var(--color-text-secondary);font-size:15px;"></p>
+      <div class="mistakes-section" id="fin-mistakes"></div>
+      <button class="restart-btn" onclick="start()">Practice again →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const W=[
+  {w:'άνθρωπος',g:'m',m:'person',t:'-ος → masculine'},
+  {w:'άντρας',g:'m',m:'man',t:'-ας → masculine'},
+  {w:'άγγελος',g:'m',m:'angel',t:'-ος → masculine'},
+  {w:'Πέτρος',g:'m',m:'Petros',t:'-ος → masculine'},
+  {w:'πιανίστας',g:'m',m:'pianist',t:'-ας → masculine'},
+  {w:'κόσμος',g:'m',m:'world',t:'-ος → masculine'},
+  {w:'Κώστας',g:'m',m:'Kostas',t:'-ας → masculine'},
+  {w:'αναπτήρας',g:'m',m:'lighter',t:'-ας → masculine'},
+  {w:'Δημήτρης',g:'m',m:'Dimitris',t:'-ης → masculine'},
+  {w:'μαθητής',g:'m',m:'student (m)',t:'-ης → masculine'},
+  {w:'υπολογιστής',g:'m',m:'computer',t:'-ής → masculine'},
+  {w:'δρόμος',g:'m',m:'road',t:'-ος → masculine'},
+  {w:'σταθμός',g:'m',m:'station',t:'-ός → masculine'},
+  {w:'καναπές',g:'m',m:'sofa',t:'-ές → masculine'},
+  {w:'καφές',g:'m',m:'coffee',t:'-ές → masculine'},
+  {w:'πατέρας',g:'m',m:'father',t:'-ας → masculine'},
+  {w:'αδερφός',g:'m',m:'brother',t:'-ός → masculine'},
+  {w:'φίλος',g:'m',m:'friend (m)',t:'-ος → masculine'},
+  {w:'ήλιος',g:'m',m:'sun',t:'-ος → masculine'},
+  {w:'ουρανός',g:'m',m:'sky',t:'-ός → masculine'},
+  {w:'χάρτης',g:'m',m:'map',t:'-ης → masculine'},
+  {w:'μήνας',g:'m',m:'month',t:'-ας → masculine'},
+  {w:'λογαριασμός',g:'m',m:'bill',t:'-ός → masculine'},
+  {w:'γιατρός',g:'m',m:'doctor',t:'-ός → masculine'},
+  {w:'τοίχος',g:'m',m:'wall',t:'-ος → masculine'},
+  {w:'κήπος',g:'m',m:'garden',t:'-ος → masculine'},
+  {w:'νόμος',g:'m',m:'law',t:'-ος → masculine'},
+  {w:'ποταμός',g:'m',m:'river',t:'-ός → masculine'},
+  {w:'Ελένη',g:'f',m:'Eleni',t:'-η → feminine'},
+  {w:'Θεσσαλονίκη',g:'f',m:'Thessaloniki',t:'-η → feminine'},
+  {w:'φίλη',g:'f',m:'friend (f)',t:'-η → feminine'},
+  {w:'θάλασσα',g:'f',m:'sea',t:'-α → feminine'},
+  {w:'Πάτρα',g:'f',m:'Patras',t:'-α → feminine'},
+  {w:'Αθήνα',g:'f',m:'Athens',t:'-α → feminine'},
+  {w:'ταβέρνα',g:'f',m:'taverna',t:'-α → feminine'},
+  {w:'παραλία',g:'f',m:'beach',t:'-α → feminine'},
+  {w:'οδός',g:'f',m:'street',t:'-ός but feminine (exception!)'},
+  {w:'μητέρα',g:'f',m:'mother',t:'-α → feminine'},
+  {w:'αδερφή',g:'f',m:'sister',t:'-η → feminine'},
+  {w:'γλώσσα',g:'f',m:'language',t:'-α → feminine'},
+  {w:'χώρα',g:'f',m:'country',t:'-α → feminine'},
+  {w:'νύχτα',g:'f',m:'night',t:'-α → feminine'},
+  {w:'μέρα',g:'f',m:'day',t:'-α → feminine'},
+  {w:'ώρα',g:'f',m:'hour',t:'-α → feminine'},
+  {w:'καρδιά',g:'f',m:'heart',t:'-ά → feminine'},
+  {w:'πόλη',g:'f',m:'city',t:'-η → feminine'},
+  {w:'εκκλησία',g:'f',m:'church',t:'-α → feminine'},
+  {w:'αγορά',g:'f',m:'market',t:'-ά → feminine'},
+  {w:'στάση',g:'f',m:'bus stop',t:'-η → feminine'},
+  {w:'άποψη',g:'f',m:'opinion',t:'-η → feminine'},
+  {w:'γυναίκα',g:'f',m:'woman',t:'-α → feminine'},
+  {w:'κόρη',g:'f',m:'daughter',t:'-η → feminine'},
+  {w:'φωτογραφία',g:'f',m:'photo',t:'-α → feminine'},
+  {w:'μουσική',g:'f',m:'music',t:'-ή → feminine'},
+  {w:'ταινία',g:'f',m:'film',t:'-α → feminine'},
+  {w:'βροχή',g:'f',m:'rain',t:'-ή → feminine'},
+  {w:'ζωή',g:'f',m:'life',t:'-ή → feminine'},
+  {w:'φύση',g:'f',m:'nature',t:'-η → feminine'},
+  {w:'λέξη',g:'f',m:'word',t:'-η → feminine'},
+  {w:'μουσείο',g:'n',m:'museum',t:'-ο → neuter'},
+  {w:'θέατρο',g:'n',m:'theatre',t:'-ο → neuter'},
+  {w:'καλοκαίρι',g:'n',m:'summer',t:'-ι → neuter'},
+  {w:'σπίτι',g:'n',m:'house',t:'-ι → neuter'},
+  {w:'μάθημα',g:'n',m:'lesson',t:'-μα → neuter'},
+  {w:'πρόβλημα',g:'n',m:'problem',t:'-μα → neuter'},
+  {w:'θέμα',g:'n',m:'topic',t:'-μα → neuter'},
+  {w:'όνομα',g:'n',m:'name',t:'-μα → neuter'},
+  {w:'πρόγραμμα',g:'n',m:'programme',t:'-μα → neuter'},
+  {w:'παιδί',g:'n',m:'child',t:'-ί → neuter'},
+  {w:'τραπέζι',g:'n',m:'table',t:'-ι → neuter'},
+  {w:'ποτήρι',g:'n',m:'glass',t:'-ι → neuter'},
+  {w:'βιβλίο',g:'n',m:'book',t:'-ο → neuter'},
+  {w:'αυτοκίνητο',g:'n',m:'car',t:'-ο → neuter'},
+  {w:'εστιατόριο',g:'n',m:'restaurant',t:'-ο → neuter'},
+  {w:'λεωφορείο',g:'n',m:'bus',t:'-ο → neuter'},
+  {w:'χωριό',g:'n',m:'village',t:'-ό → neuter'},
+  {w:'νερό',g:'n',m:'water',t:'-ό → neuter'},
+  {w:'ψωμί',g:'n',m:'bread',t:'-ί → neuter'},
+  {w:'κρασί',g:'n',m:'wine',t:'-ί → neuter'},
+  {w:'δέντρο',g:'n',m:'tree',t:'-ο → neuter'},
+  {w:'σχολείο',g:'n',m:'school',t:'-ο → neuter'},
+  {w:'γράμμα',g:'n',m:'letter',t:'-μα → neuter'},
+  {w:'κλίμα',g:'n',m:'climate',t:'-μα → neuter'},
+  {w:'χρώμα',g:'n',m:'colour',t:'-μα → neuter'},
+  {w:'άρωμα',g:'n',m:'perfume',t:'-μα → neuter'},
+  {w:'φαγητό',g:'n',m:'food',t:'-ό → neuter'},
+  {w:'τηλέφωνο',g:'n',m:'phone',t:'-ο → neuter'},
+  {w:'παράθυρο',g:'n',m:'window',t:'-ο → neuter'},
+  {w:'τυρί',g:'n',m:'cheese',t:'-ί → neuter'},
+  {w:'λάδι',g:'n',m:'oil',t:'-ι → neuter'},
+  {w:'χέρι',g:'n',m:'hand',t:'-ι → neuter'},
+  {w:'μάτι',g:'n',m:'eye',t:'-ι → neuter'},
+  {w:'στόμα',g:'n',m:'mouth',t:'-μα → neuter'},
+  {w:'σώμα',g:'n',m:'body',t:'-μα → neuter'},
+  {w:'δώρο',g:'n',m:'gift',t:'-ο → neuter'},
+  {w:'τραγούδι',g:'n',m:'song',t:'-ι → neuter'},
+];
+
+let q=[],idx=0,cor=0,wr=0,str=0,mist=[],answered=false,mc={};
+
+function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function start(){
+  q=shuf([...W]).slice(0,25);
+  idx=0;cor=0;wr=0;str=0;mist=[];mc={};
+  document.getElementById('sc').textContent=0;
+  document.getElementById('sw').textContent=0;
+  document.getElementById('ss').textContent=0;
+  document.getElementById('score-bar').style.display='flex';
+  document.getElementById('quiz-view').style.display='block';
+  document.getElementById('finish-view').style.display='none';
+  showWord();
+}
+
+function showWord(){
+  answered=false;
+  const w=q[idx];
+  document.getElementById('wd').textContent=w.w;
+  document.getElementById('wm').textContent='('+w.m+')';
+  document.getElementById('prog').textContent='Word '+(idx+1)+' of '+q.length;
+  document.getElementById('fb').style.display='none';
+  document.getElementById('nb').style.display='none';
+  ['bm','bf','bn'].forEach(id=>{const b=document.getElementById(id);b.className='choice-btn';b.disabled=false});
+}
+
+function ans(g){
+  if(answered)return;
+  answered=true;
+  const w=q[idx],cg=w.g,art={m:'ο',f:'η',n:'το'},bmap={m:'bm',f:'bf',n:'bn'};
+  ['bm','bf','bn'].forEach(id=>document.getElementById(id).disabled=true);
+  document.getElementById(bmap[cg]).classList.add(g===cg?'correct':'reveal');
+  if(g!==cg)document.getElementById(bmap[g]).classList.add('wrong');
+  const fb=document.getElementById('fb');
+  fb.style.display='block';
+  if(g===cg){
+    cor++;str++;
+    fb.className='feedback correct';
+    fb.innerHTML='✓ Correct! <strong>'+art[cg]+' '+w.w+'</strong> &nbsp;·&nbsp; '+w.t;
+  } else {
+    wr++;str=0;
+    fb.className='feedback wrong';
+    fb.innerHTML='✗ It\'s <strong>'+art[cg]+' '+w.w+'</strong> &nbsp;·&nbsp; '+w.t;
+    mist.push({w:w.w,c:art[cg],t:w.t});
+    mc[w.w]=(mc[w.w]||0)+1;
+    if(mc[w.w]<=2)q.push(w);
+  }
+  document.getElementById('sc').textContent=cor;
+  document.getElementById('sw').textContent=wr;
+  document.getElementById('ss').textContent=str;
+  document.getElementById('nb').style.display='block';
+}
+
+function nextWord(){
+  idx++;
+  if(idx>=q.length) showFinish();
+  else showWord();
+}
+
+function showFinish(){
+  document.getElementById('quiz-view').style.display='none';
+  const tot=cor+wr,pct=Math.round(cor/tot*100);
+  document.getElementById('fin-msg').textContent=pct>=90?'Excellent work! 🎉':pct>=70?'Good progress! 👍':'Keep going — practice makes perfect! 📚';
+  document.getElementById('fin-score').textContent=cor+' correct out of '+tot+' ('+pct+'%)';
+  const mm=document.getElementById('fin-mistakes');
+  mm.innerHTML='';
+  if(mist.length){
+    const hdr=document.createElement('p');
+    hdr.style.cssText='font-size:13px;color:var(--color-text-secondary);margin-bottom:8px';
+    hdr.textContent='Words to review:';
+    mm.appendChild(hdr);
+    const seen=new Set();
+    mist.forEach(m=>{
+      if(!seen.has(m.w)){
+        seen.add(m.w);
+        const d=document.createElement('div');
+        d.className='mistake-item';
+        d.innerHTML='<strong>'+m.c+' '+m.w+'</strong> &nbsp;·&nbsp; '+m.t;
+        mm.appendChild(d);
+      }
+    });
+  } else {
+    const p=document.createElement('p');
+    p.style.cssText='color:#3B6D11;font-size:14px;margin-top:1rem';
+    p.textContent='Perfect round — no mistakes!';
+    mm.appendChild(p);
+  }
+  document.getElementById('finish-view').style.display='block';
+}
+
+start();
+</script>
+</body>
+</html>

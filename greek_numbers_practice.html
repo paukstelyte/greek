@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greek Numbers 1–100</title>
+<style>
+  :root {
+    --bg:#f7f6f3;--surface:#ffffff;--surface2:#f0ede8;--text:#1a1a18;--text2:#6b6b66;--text3:#a0a09a;
+    --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.18);--r-md:10px;--r-lg:14px;
+  }
+  @media(prefers-color-scheme:dark){:root{--bg:#1a1a18;--surface:#242422;--surface2:#2e2e2b;--text:#f0ede8;--text2:#a0a09a;--text3:#66665f;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);}}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;padding:2rem 1rem 4rem;}
+  .app{width:100%;max-width:620px;}
+  h1{font-size:20px;font-weight:500;margin-bottom:.25rem;}
+  .subtitle{font-size:14px;color:var(--text2);margin-bottom:1.75rem;}
+  .tabs{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap;}
+  .tab{flex:1;min-width:80px;padding:.5rem .25rem;border:.5px solid var(--border2);border-radius:var(--r-md);background:var(--surface);color:var(--text2);font-size:12px;cursor:pointer;text-align:center;}
+  .tab.active{background:var(--text);color:var(--bg);font-weight:500;border-color:var(--text);}
+  .score-bar{display:flex;gap:12px;margin-bottom:1.25rem;}
+  .score-card{flex:1;background:var(--surface);border:.5px solid var(--border);border-radius:var(--r-md);padding:.65rem;text-align:center;}
+  .score-label{font-size:11px;color:var(--text2);margin-bottom:3px;}
+  .score-val{font-size:20px;font-weight:500;}
+  .word-card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r-lg);padding:1.75rem 1.5rem;text-align:center;margin-bottom:1.25rem;}
+  .word-hint{font-size:13px;color:var(--text2);margin-bottom:.5rem;}
+  .word-display{font-size:38px;font-weight:500;margin-bottom:.4rem;}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem;}
+  .choice-btn{padding:.7rem .5rem;border:.5px solid var(--border2);border-radius:var(--r-md);background:var(--surface);color:var(--text);font-size:14px;cursor:pointer;font-family:inherit;text-align:center;}
+  .choice-btn:hover:not(:disabled){background:var(--surface2);}
+  .choice-btn.correct{background:#EAF3DE;border-color:#639922;color:#3B6D11;}
+  .choice-btn.wrong{background:#FCEBEB;border-color:#E24B4A;color:#A32D2D;}
+  .choice-btn.reveal{background:#EAF3DE;border-color:#639922;color:#3B6D11;}
+  .feedback{border-radius:var(--r-md);padding:.875rem 1rem;margin-bottom:1rem;font-size:14px;line-height:1.6;}
+  .feedback.correct{background:#EAF3DE;color:#3B6D11;border:.5px solid #639922;}
+  .feedback.wrong{background:#FCEBEB;color:#A32D2D;border:.5px solid #E24B4A;}
+  .next-btn{width:100%;padding:.75rem;border:.5px solid var(--border2);border-radius:var(--r-md);background:var(--surface2);color:var(--text);font-size:15px;cursor:pointer;font-family:inherit;}
+  .rule-box{background:var(--surface2);border-radius:var(--r-md);padding:.875rem 1rem;margin-bottom:1.25rem;font-size:13px;color:var(--text2);line-height:1.7;border:.5px solid var(--border);}
+  .rule-box strong{color:var(--text);font-weight:500;}
+  .progress{font-size:12px;color:var(--text3);text-align:center;margin-bottom:.5rem;}
+  .type-input{width:100%;padding:.75rem 1rem;border:.5px solid var(--border2);border-radius:var(--r-md);background:var(--surface);color:var(--text);font-size:16px;margin-bottom:.75rem;font-family:inherit;}
+  .type-input:focus{outline:none;border-color:var(--text);}
+  .submit-btn{width:100%;padding:.75rem;border:.5px solid var(--border2);border-radius:var(--r-md);background:var(--surface2);color:var(--text);font-size:15px;cursor:pointer;margin-bottom:.75rem;font-family:inherit;}
+  .ref-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem;}
+  .ref-section{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r-lg);padding:.875rem 1rem;}
+  .ref-title{font-size:11px;font-weight:500;color:var(--text2);margin-bottom:.6rem;text-transform:uppercase;letter-spacing:.05em;}
+  .ref-row{display:flex;justify-content:space-between;font-size:13px;padding:2px 0;border-bottom:.5px solid var(--border);}
+  .ref-row:last-child{border-bottom:none;}
+  .ref-num{font-weight:500;min-width:28px;}
+  .ref-gr{color:var(--text2);font-size:12px;}
+  .finish-screen{text-align:center;padding:1.5rem;}
+  .finish-screen h2{font-size:22px;font-weight:500;margin-bottom:.5rem;}
+  .mistake-item{background:#FCEBEB;border-radius:var(--r-md);padding:.65rem 1rem;margin-bottom:.4rem;font-size:14px;color:#A32D2D;text-align:left;}
+  .restart-btn{margin-top:1.25rem;padding:.75rem 2rem;border:.5px solid var(--border2);border-radius:var(--r-md);background:var(--surface2);color:var(--text);font-size:15px;cursor:pointer;font-family:inherit;}
+  .ref-back-btn{margin-top:1rem;padding:.75rem 2rem;border:.5px solid var(--border2);border-radius:var(--r-md);background:var(--surface2);color:var(--text);font-size:15px;cursor:pointer;font-family:inherit;display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>🔢 Greek Numbers 1–100</h1>
+  <p class="subtitle">Learn Greek numbers — wrong answers repeat until you get them right.</p>
+  <div class="tabs">
+    <div class="tab active" id="tab-mc" onclick="switchMode('mc')">Multiple choice</div>
+    <div class="tab" id="tab-type" onclick="switchMode('type')">Type it</div>
+    <div class="tab" id="tab-seq" onclick="switchMode('seq')">Sequence</div>
+    <div class="tab" id="tab-ref" onclick="switchMode('ref')">Reference</div>
+  </div>
+  <div class="score-bar" id="score-bar">
+    <div class="score-card"><div class="score-label">Correct</div><div class="score-val" id="sc">0</div></div>
+    <div class="score-card"><div class="score-label">Wrong</div><div class="score-val" id="sw">0</div></div>
+    <div class="score-card"><div class="score-label">Streak</div><div class="score-val" id="ss">0</div></div>
+  </div>
+  <div id="mc-view">
+    <div class="rule-box" id="rule-box">See a <strong>number</strong> → choose the Greek word, or see a <strong>Greek word</strong> → choose the number.</div>
+    <div class="progress" id="prog">Question 1 of 15</div>
+    <div class="word-card"><div class="word-hint" id="qhint"></div><div class="word-display" id="wd">—</div></div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="fb" style="display:none"></div>
+    <button class="next-btn" id="nb" style="display:none" onclick="nextQ()">Next →</button>
+  </div>
+  <div id="type-view" style="display:none">
+    <div class="rule-box">See a number — type the full Greek word. Wrong answers repeat!</div>
+    <div class="progress" id="tprog">Question 1 of 15</div>
+    <div class="word-card"><div class="word-hint">Type this number in Greek:</div><div class="word-display" id="twd">—</div></div>
+    <input class="type-input" id="tinput" placeholder="Type the Greek word..." onkeydown="if(event.key==='Enter')checkType()">
+    <button class="submit-btn" onclick="checkType()">Check answer</button>
+    <div class="feedback" id="tfb" style="display:none"></div>
+    <button class="next-btn" id="tnb" style="display:none" onclick="nextType()">Next →</button>
+  </div>
+  <div id="seq-view" style="display:none">
+    <div class="rule-box">Fill in the <strong>missing number</strong> in Greek from the sequence.</div>
+    <div class="progress" id="sprog">Round 1 of 8</div>
+    <div class="word-card" style="text-align:left;padding:1.25rem 1.5rem"><div class="word-hint" style="margin-bottom:.75rem">Fill in the missing number:</div><div id="seq-display" style="font-size:18px;line-height:2.2;"></div></div>
+    <input class="type-input" id="sinput" placeholder="Type the missing Greek number..." onkeydown="if(event.key==='Enter')checkSeq()">
+    <button class="submit-btn" onclick="checkSeq()">Check answer</button>
+    <div class="feedback" id="sfb" style="display:none"></div>
+    <button class="next-btn" id="snb" style="display:none" onclick="nextSeq()">Next →</button>
+  </div>
+  <div id="ref-view" style="display:none">
+    <div class="ref-grid">
+      <div class="ref-section"><div class="ref-title">1–10</div><div class="ref-row"><span class="ref-num">1</span><span class="ref-gr">ένα</span></div><div class="ref-row"><span class="ref-num">2</span><span class="ref-gr">δύο</span></div><div class="ref-row"><span class="ref-num">3</span><span class="ref-gr">τρία</span></div><div class="ref-row"><span class="ref-num">4</span><span class="ref-gr">τέσσερα</span></div><div class="ref-row"><span class="ref-num">5</span><span class="ref-gr">πέντε</span></div><div class="ref-row"><span class="ref-num">6</span><span class="ref-gr">έξι</span></div><div class="ref-row"><span class="ref-num">7</span><span class="ref-gr">επτά</span></div><div class="ref-row"><span class="ref-num">8</span><span class="ref-gr">οκτώ</span></div><div class="ref-row"><span class="ref-num">9</span><span class="ref-gr">εννέα</span></div><div class="ref-row"><span class="ref-num">10</span><span class="ref-gr">δέκα</span></div></div>
+      <div class="ref-section"><div class="ref-title">11–20</div><div class="ref-row"><span class="ref-num">11</span><span class="ref-gr">έντεκα</span></div><div class="ref-row"><span class="ref-num">12</span><span class="ref-gr">δώδεκα</span></div><div class="ref-row"><span class="ref-num">13</span><span class="ref-gr">δεκατρία</span></div><div class="ref-row"><span class="ref-num">14</span><span class="ref-gr">δεκατέσσερα</span></div><div class="ref-row"><span class="ref-num">15</span><span class="ref-gr">δεκαπέντε</span></div><div class="ref-row"><span class="ref-num">16</span><span class="ref-gr">δεκαέξι</span></div><div class="ref-row"><span class="ref-num">17</span><span class="ref-gr">δεκαεπτά</span></div><div class="ref-row"><span class="ref-num">18</span><span class="ref-gr">δεκαοκτώ</span></div><div class="ref-row"><span class="ref-num">19</span><span class="ref-gr">δεκαεννέα</span></div><div class="ref-row"><span class="ref-num">20</span><span class="ref-gr">είκοσι</span></div></div>
+      <div class="ref-section"><div class="ref-title">Tens</div><div class="ref-row"><span class="ref-num">20</span><span class="ref-gr">είκοσι</span></div><div class="ref-row"><span class="ref-num">30</span><span class="ref-gr">τριάντα</span></div><div class="ref-row"><span class="ref-num">40</span><span class="ref-gr">σαράντα</span></div><div class="ref-row"><span class="ref-num">50</span><span class="ref-gr">πενήντα</span></div><div class="ref-row"><span class="ref-num">60</span><span class="ref-gr">εξήντα</span></div><div class="ref-row"><span class="ref-num">70</span><span class="ref-gr">εβδομήντα</span></div><div class="ref-row"><span class="ref-num">80</span><span class="ref-gr">ογδόντα</span></div><div class="ref-row"><span class="ref-num">90</span><span class="ref-gr">ενενήντα</span></div><div class="ref-row"><span class="ref-num">100</span><span class="ref-gr">εκατό</span></div></div>
+    </div>
+    <div class="rule-box"><strong>Compounds:</strong> 21 = είκοσι ένα &nbsp;·&nbsp; 35 = τριάντα πέντε &nbsp;·&nbsp; 99 = ενενήντα εννέα</div>
+    <button class="ref-back-btn" onclick="backFromRef()">Back to practice →</button>
+  </div>
+  <div id="finish-view" style="display:none">
+    <div class="finish-screen">
+      <h2 id="fin-msg"></h2>
+      <p id="fin-score" style="color:var(--text2);font-size:15px;"></p>
+      <div id="fin-mistakes" style="margin-top:1rem;text-align:left"></div>
+      <button class="restart-btn" onclick="restartCurrent()">Practice again →</button>
+    </div>
+  </div>
+</div>
+<script>
+const NUMS=[[1,'ένα'],[2,'δύο'],[3,'τρία'],[4,'τέσσερα'],[5,'πέντε'],[6,'έξι'],[7,'επτά'],[8,'οκτώ'],[9,'εννέα'],[10,'δέκα'],[11,'έντεκα'],[12,'δώδεκα'],[13,'δεκατρία'],[14,'δεκατέσσερα'],[15,'δεκαπέντε'],[16,'δεκαέξι'],[17,'δεκαεπτά'],[18,'δεκαοκτώ'],[19,'δεκαεννέα'],[20,'είκοσι'],[21,'είκοσι ένα'],[22,'είκοσι δύο'],[25,'είκοσι πέντε'],[30,'τριάντα'],[31,'τριάντα ένα'],[35,'τριάντα πέντε'],[40,'σαράντα'],[45,'σαράντα πέντε'],[50,'πενήντα'],[55,'πενήντα πέντε'],[60,'εξήντα'],[67,'εξήντα επτά'],[70,'εβδομήντα'],[76,'εβδομήντα έξι'],[80,'ογδόντα'],[88,'ογδόντα οκτώ'],[90,'ενενήντα'],[95,'ενενήντα πέντε'],[99,'ενενήντα εννέα'],[100,'εκατό']];
+const MAP={};NUMS.forEach(([n,g])=>MAP[n]=g);
+let curMode='mc',q=[],idx=0,cor=0,wr=0,str=0,mist=[],answered=false,mc={};
+let tq=[],tidx=0,tcor=0,twr=0,tstr=0,tmist=[],tanswered=false,tmc={};
+const SEQ_SETS=[{start:1,step:1,count:5},{start:1,step:1,count:10},{start:5,step:5,count:8},{start:10,step:10,count:10},{start:2,step:2,count:8},{start:11,step:1,count:10},{start:20,step:1,count:6},{start:90,step:1,count:6}];
+let seqSets=[],ssidx=0,scor=0,swr=0,sstr=0,smist=[],sanswered=false,ssMissing=0;
+function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function hideAll(){['mc-view','type-view','seq-view','ref-view','finish-view'].forEach(id=>document.getElementById(id).style.display='none');['tab-mc','tab-type','tab-seq','tab-ref'].forEach(id=>document.getElementById(id).classList.remove('active'));}
+function switchMode(m){hideAll();document.getElementById('score-bar').style.display='flex';if(m==='ref'){document.getElementById('tab-ref').classList.add('active');document.getElementById('ref-view').style.display='block';document.getElementById('score-bar').style.display='none';return;}curMode=m;document.getElementById('tab-'+m).classList.add('active');if(m==='mc')startMC();else if(m==='type')startType();else if(m==='seq')startSeq();}
+function backFromRef(){hideAll();document.getElementById('score-bar').style.display='flex';if(curMode==='mc'){document.getElementById('tab-mc').classList.add('active');document.getElementById('mc-view').style.display='block';}else if(curMode==='type'){document.getElementById('tab-type').classList.add('active');document.getElementById('type-view').style.display='block';}else if(curMode==='seq'){document.getElementById('tab-seq').classList.add('active');document.getElementById('seq-view').style.display='block';}}
+function restartCurrent(){switchMode(curMode);}
+function startMC(){q=shuf([...NUMS]).slice(0,15);idx=0;cor=0;wr=0;str=0;mist=[];mc={};document.getElementById('sc').textContent=0;document.getElementById('sw').textContent=0;document.getElementById('ss').textContent=0;document.getElementById('mc-view').style.display='block';document.getElementById('finish-view').style.display='none';showMC();}
+function showMC(){answered=false;const[num,gr]=q[idx];const dir=Math.random()<0.5?'n2g':'g2n';q[idx]._dir=dir;if(dir==='n2g'){document.getElementById('qhint').textContent='What is this number in Greek?';document.getElementById('wd').textContent=num;}else{document.getElementById('qhint').textContent='Which number is this?';document.getElementById('wd').textContent=gr;}document.getElementById('prog').textContent='Question '+(idx+1)+' of '+q.length;document.getElementById('fb').style.display='none';document.getElementById('nb').style.display='none';let pool=shuf(NUMS.filter(([n])=>n!==num)).slice(0,3);let opts;if(dir==='n2g'){opts=shuf([gr,...pool.map(([,g])=>g)]);}else{opts=shuf([num,...pool.map(([n])=>n)]);}const cc=document.getElementById('choices');cc.innerHTML='';opts.forEach(opt=>{const b=document.createElement('button');b.className='choice-btn';b.textContent=opt;b.onclick=()=>pickMC(opt,num,gr,dir);cc.appendChild(b);});}
+function pickMC(chosen,num,gr,dir){if(answered)return;answered=true;const correct=dir==='n2g'?gr:num;document.querySelectorAll('.choice-btn').forEach(b=>{b.disabled=true;if(b.textContent==correct)b.classList.add(chosen==correct?'correct':'reveal');else if(b.textContent==chosen&&chosen!=correct)b.classList.add('wrong');});const fb=document.getElementById('fb');fb.style.display='block';if(chosen==correct){cor++;str++;fb.className='feedback correct';fb.innerHTML='✓ Correct! <strong>'+num+'</strong> = '+gr;}else{wr++;str=0;fb.className='feedback wrong';fb.innerHTML='✗ It\'s <strong>'+num+'</strong> = '+gr;mist.push([num,gr]);mc[num]=(mc[num]||0)+1;if(mc[num]<=2)q.push([num,gr]);}document.getElementById('sc').textContent=cor;document.getElementById('sw').textContent=wr;document.getElementById('ss').textContent=str;document.getElementById('nb').style.display='block';}
+function nextQ(){idx++;if(idx>=q.length)showFinish(cor,wr,mist);else showMC();}
+function startType(){tq=shuf([...NUMS]).slice(0,15);tidx=0;tcor=0;twr=0;tstr=0;tmist=[];tmc={};document.getElementById('sc').textContent=0;document.getElementById('sw').textContent=0;document.getElementById('ss').textContent=0;document.getElementById('type-view').style.display='block';document.getElementById('finish-view').style.display='none';showType();}
+function showType(){tanswered=false;const[num,gr]=tq[tidx];document.getElementById('twd').textContent=num;document.getElementById('tprog').textContent='Question '+(tidx+1)+' of '+tq.length;document.getElementById('tfb').style.display='none';document.getElementById('tnb').style.display='none';const inp=document.getElementById('tinput');inp.value='';inp.disabled=false;inp.focus();}
+function checkType(){if(tanswered)return;const[num,gr]=tq[tidx];const val=document.getElementById('tinput').value.trim();if(!val)return;tanswered=true;document.getElementById('tinput').disabled=true;const fb=document.getElementById('tfb');fb.style.display='block';const norm=s=>s.toLowerCase().replace(/\s+/g,' ').trim();if(norm(val)===norm(gr)){tcor++;tstr++;fb.className='feedback correct';fb.innerHTML='✓ Correct! <strong>'+num+'</strong> = '+gr;}else{twr++;tstr=0;fb.className='feedback wrong';fb.innerHTML='✗ The answer is <strong>'+gr+'</strong> (you wrote: '+val+')';tmist.push([num,gr]);tmc[num]=(tmc[num]||0)+1;if(tmc[num]<=2)tq.push([num,gr]);}document.getElementById('sc').textContent=tcor;document.getElementById('sw').textContent=twr;document.getElementById('ss').textContent=tstr;document.getElementById('tnb').style.display='block';}
+function nextType(){tidx++;if(tidx>=tq.length)showFinish(tcor,twr,tmist);else showType();}
+function startSeq(){seqSets=shuf([...SEQ_SETS]);ssidx=0;scor=0;swr=0;sstr=0;smist=[];document.getElementById('sc').textContent=0;document.getElementById('sw').textContent=0;document.getElementById('ss').textContent=0;document.getElementById('seq-view').style.display='block';document.getElementById('finish-view').style.display='none';showSeq();}
+function showSeq(){sanswered=false;const s=seqSets[ssidx];const nums=[];for(let i=0;i<s.count;i++)nums.push(s.start+i*s.step);const mi=Math.floor(Math.random()*(nums.length-2))+1;ssMissing=nums[mi];document.getElementById('sprog').textContent='Round '+(ssidx+1)+' of '+seqSets.length;const disp=document.getElementById('seq-display');disp.innerHTML='';nums.forEach((n,i)=>{const sp=document.createElement('span');if(i===mi){sp.innerHTML=' <span style="display:inline-block;min-width:90px;border-bottom:2px solid var(--border2);color:var(--text3);font-size:15px;">___?___</span> ';}else{sp.innerHTML=' <span style="font-weight:500;">'+n+' <span style="font-size:12px;color:var(--text3)">('+MAP[n]+')</span></span> ';}disp.appendChild(sp);});document.getElementById('sfb').style.display='none';document.getElementById('snb').style.display='none';const inp=document.getElementById('sinput');inp.value='';inp.disabled=false;inp.focus();}
+function checkSeq(){if(sanswered)return;const val=document.getElementById('sinput').value.trim();if(!val)return;sanswered=true;document.getElementById('sinput').disabled=true;const correct=MAP[ssMissing];const fb=document.getElementById('sfb');fb.style.display='block';const norm=s=>s.toLowerCase().replace(/\s+/g,' ').trim();if(norm(val)===norm(correct)||parseInt(val)===ssMissing){scor++;sstr++;fb.className='feedback correct';fb.innerHTML='✓ Correct! <strong>'+ssMissing+'</strong> = '+correct;}else{swr++;sstr=0;fb.className='feedback wrong';fb.innerHTML='✗ The missing number is <strong>'+ssMissing+'</strong> = '+correct;smist.push([ssMissing,correct]);}document.getElementById('sc').textContent=scor;document.getElementById('sw').textContent=swr;document.getElementById('ss').textContent=sstr;document.getElementById('snb').style.display='block';}
+function nextSeq(){ssidx++;if(ssidx>=seqSets.length)showFinish(scor,swr,smist);else showSeq();}
+function showFinish(c,w,mistakes){hideAll();document.getElementById('score-bar').style.display='flex';document.getElementById('finish-view').style.display='block';const tot=c+w,pct=tot?Math.round(c/tot*100):0;document.getElementById('fin-msg').textContent=pct>=90?'Excellent! 🎉':pct>=70?'Good job! 👍':'Keep going! 📚';document.getElementById('fin-score').textContent=c+' correct out of '+tot+' ('+pct+'%)';const mm=document.getElementById('fin-mistakes');mm.innerHTML='';if(mistakes.length){const hdr=document.createElement('p');hdr.style.cssText='font-size:13px;color:var(--text2);margin-bottom:8px';hdr.textContent='Numbers to review:';mm.appendChild(hdr);const seen=new Set();mistakes.forEach(([n,g])=>{if(!seen.has(n)){seen.add(n);const d=document.createElement('div');d.className='mistake-item';d.innerHTML='<strong>'+n+'</strong> = '+g;mm.appendChild(d);}});}else{mm.innerHTML='<p style="color:#3B6D11;font-size:14px">Perfect round!</p>';}}
+switchMode('mc');
+</script>
+</body>
+</html>

@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greek Alphabet</title>
+<style>
+  :root {
+    --bg: #deeef8; --surface: #ffffff; --surface2: #edf5fc;
+    --ink: #0e1621; --blue: #1b3f72; --mid: #3468a8; --sky: #6aaad4;
+    --fog: #c8dff0; --muted: #5a7a96;
+    --border: rgba(100,160,210,0.25); --border2: rgba(100,160,210,0.4);
+    --r: 14px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+  nav { background: var(--blue); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; }
+  .nav-title { font-size: 1rem; font-weight: 700; letter-spacing: .06em; color: #fff; text-transform: uppercase; }
+  .nav-title span { color: var(--fog); font-weight: 300; }
+
+  .tabs { display: flex; gap: 6px; padding: 1.25rem 1.5rem .5rem; max-width: 700px; margin: 0 auto; flex-wrap: wrap; }
+  .tab { flex: 1; min-width: 120px; padding: .55rem .5rem; border: 1px solid var(--border2); border-radius: var(--r); background: var(--surface); color: var(--muted); font-size: 12px; font-weight: 500; cursor: pointer; text-align: center; letter-spacing: .03em; transition: all .15s; }
+  .tab.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+  .score-bar { display: flex; gap: 10px; padding: 0 1.5rem 1rem; max-width: 700px; margin: 0 auto; }
+  .score-card { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: .6rem; text-align: center; }
+  .score-label { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+  .score-val { font-size: 20px; font-weight: 700; color: var(--ink); }
+
+  .quiz-wrap { max-width: 700px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+
+  .rule-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: .875rem 1.1rem; margin-bottom: 1rem; font-size: 13px; color: var(--muted); line-height: 1.65; }
+  .rule-box strong { color: var(--ink); font-weight: 600; }
+
+  /* ── QUESTION CARD ── */
+  .q-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 1.75rem 1.5rem 1.5rem; text-align: center; margin-bottom: 1.1rem; position: relative; }
+  .q-hint { font-size: 13px; color: var(--muted); margin-bottom: .5rem; }
+  .q-main { font-size: 3.5rem; font-weight: 700; color: var(--ink); line-height: 1; margin-bottom: .35rem; }
+  .q-sub  { font-size: 14px; color: var(--muted); margin-bottom: .75rem; }
+
+  .retry-badge { position: absolute; top: 10px; right: 12px; background: #fef3e2; color: #854F0B; font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 20px; letter-spacing: .04em; }
+  .later-badge { position: absolute; top: 10px; left: 12px; background: #e8f0fb; color: #1a4a8a; font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 20px; letter-spacing: .04em; }
+
+  .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
+  .choice-btn { padding: .75rem .5rem; border: 1px solid var(--border2); border-radius: var(--r); background: var(--surface); color: var(--ink); font-size: 14px; cursor: pointer; font-family: inherit; text-align: center; transition: background .12s; line-height: 1.35; }
+  .choice-btn:hover:not(:disabled) { background: var(--surface2); }
+  .choice-btn.correct { background: #EAF3DE; border-color: #639922; color: #3B6D11; }
+  .choice-btn.wrong   { background: #FCEBEB; border-color: #E24B4A; color: #A32D2D; }
+  .choice-btn.reveal  { background: #EAF3DE; border-color: #639922; color: #3B6D11; }
+
+  .feedback { border-radius: var(--r); padding: .875rem 1rem; margin-bottom: 1rem; font-size: 14px; line-height: 1.6; }
+  .feedback.correct { background: #EAF3DE; color: #3B6D11; border: 1px solid #639922; }
+  .feedback.wrong   { background: #FCEBEB; color: #A32D2D; border: 1px solid #E24B4A; }
+
+  .next-btn { width: 100%; padding: .75rem; border: 1px solid var(--border2); border-radius: var(--r); background: var(--surface2); color: var(--ink); font-size: 15px; cursor: pointer; font-family: inherit; }
+  .next-btn:hover { background: var(--surface); }
+
+  .progress { font-size: 12px; color: var(--muted); text-align: center; margin-bottom: .5rem; letter-spacing: .03em; }
+
+  /* ── REFERENCE ── */
+  .ref-section-title { font-size: 11px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--mid); margin: 1.25rem 0 .6rem; }
+  .ref-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 7px; margin-bottom: .5rem; }
+  .ref-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: .6rem .875rem; display: flex; align-items: center; gap: .7rem; }
+  .ref-card:hover { background: var(--surface); }
+  .ref-letter { font-size: 1.4rem; font-weight: 700; color: var(--blue); min-width: 40px; }
+  .ref-info { display: flex; flex-direction: column; }
+  .ref-name  { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .ref-sound { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .ref-back-btn { width: 100%; padding: .75rem; border: 1px solid var(--border2); border-radius: var(--r); background: var(--surface); color: var(--ink); font-size: 14px; cursor: pointer; font-family: inherit; margin-top: 1.25rem; }
+
+  /* ── FINISH ── */
+  .finish-screen { text-align: center; padding: 2rem 1rem; }
+  .finish-screen h2 { font-size: 22px; font-weight: 700; margin-bottom: .4rem; }
+  .mistake-item { background: #FCEBEB; border-radius: var(--r); padding: .65rem 1rem; margin-bottom: .4rem; font-size: 14px; color: #A32D2D; text-align: left; }
+  .restart-btn { margin-top: 1.25rem; padding: .75rem 2rem; border: 1px solid var(--border2); border-radius: var(--r); background: var(--surface); color: var(--ink); font-size: 15px; cursor: pointer; font-family: inherit; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-title">Greek <span>Alphabet & Sounds</span></div>
+  <div style="font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:.1em">Από Α ως Ω</div>
+</nav>
+
+<div class="tabs" id="tabs">
+  <div class="tab active" id="tab-letters"    onclick="switchMode('letters')">Letters & Names</div>
+  <div class="tab"        id="tab-sounds"     onclick="switchMode('sounds')">Letter Sounds</div>
+  <div class="tab"        id="tab-diphthongs" onclick="switchMode('diphthongs')">Diphthongs</div>
+  <div class="tab"        id="tab-ref"        onclick="switchMode('ref')">Reference</div>
+</div>
+
+<div class="score-bar" id="score-bar">
+  <div class="score-card"><div class="score-label">Correct</div><div class="score-val" id="sc">0</div></div>
+  <div class="score-card"><div class="score-label">Wrong</div><div class="score-val" id="sw">0</div></div>
+  <div class="score-card"><div class="score-label">Streak</div><div class="score-val" id="ss">0</div></div>
+</div>
+
+<div class="quiz-wrap">
+
+  <div id="quiz-view">
+    <div class="rule-box" id="rule-box"></div>
+    <div class="progress" id="prog">Question 1</div>
+    <div class="q-card" id="q-card">
+      <div class="retry-badge" id="retry-badge" style="display:none">↩ Try again</div>
+      <div class="later-badge" id="later-badge" style="display:none">🔁 Scheduled review</div>
+      <div class="q-hint" id="qhint"></div>
+      <div class="q-main" id="qmain">—</div>
+      <div class="q-sub"  id="qsub"></div>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="fb" style="display:none"></div>
+    <button class="next-btn" id="nb" style="display:none" onclick="nextQ()">Next →</button>
+  </div>
+
+  <div id="ref-view" style="display:none">
+    <div class="ref-section-title">The 24 Greek Letters</div>
+    <div class="ref-grid" id="ref-letters"></div>
+    <div class="ref-section-title">Diphthongs & Combinations</div>
+    <div class="ref-grid" id="ref-diphs"></div>
+    <button class="ref-back-btn" onclick="backFromRef()">← Back to practice</button>
+  </div>
+
+  <div id="finish-view" style="display:none">
+    <div class="finish-screen">
+      <h2 id="fin-msg"></h2>
+      <p id="fin-score" style="color:var(--muted);font-size:15px;margin-bottom:.5rem"></p>
+      <div id="fin-mistakes" style="margin-top:1rem;text-align:left"></div>
+      <button class="restart-btn" onclick="restartCurrent()">Practice again →</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────
+
+const LETTERS = [
+  { letter:'Α α', name:'άλφα',    sound:'[a] like "a" in father',    speak:'αδερφός',    greekEx:'αδερφός (brother)' },
+  { letter:'Β β', name:'βήτα',    sound:'[v] like "v" in very',      speak:'βιβλίο',     greekEx:'βιβλίο (book)' },
+  { letter:'Γ γ', name:'γάμα',    sound:'[y/gh] soft "g" or "y"',    speak:'γάτα',       greekEx:'γάτα (cat)' },
+  { letter:'Δ δ', name:'δέλτα',   sound:'[ð] like "th" in this',     speak:'δρόμος',     greekEx:'δρόμος (road)' },
+  { letter:'Ε ε', name:'έψιλον',  sound:'[e] like "e" in bed',       speak:'εστιατόριο', greekEx:'εστιατόριο (restaurant)' },
+  { letter:'Ζ ζ', name:'ζήτα',    sound:'[z] like "z" in zoo',       speak:'ζωή',        greekEx:'ζωή (life)' },
+  { letter:'Η η', name:'ήτα',     sound:'[i] like "ee" in see',      speak:'ήλιος',      greekEx:'ήλιος (sun)' },
+  { letter:'Θ θ', name:'θήτα',    sound:'[θ] like "th" in think',    speak:'θάλασσα',    greekEx:'θάλασσα (sea)' },
+  { letter:'Ι ι', name:'γιώτα',   sound:'[i] like "ee" in see',      speak:'ιστορία',    greekEx:'ιστορία (history)' },
+  { letter:'Κ κ', name:'κάπα',    sound:'[k] like "k" in key',       speak:'καφές',      greekEx:'καφές (coffee)' },
+  { letter:'Λ λ', name:'λάμδα',   sound:'[l] like "l" in lamp',      speak:'λεωφορείο',  greekEx:'λεωφορείο (bus)' },
+  { letter:'Μ μ', name:'μι',      sound:'[m] like "m" in map',       speak:'μουσική',    greekEx:'μουσική (music)' },
+  { letter:'Ν ν', name:'νι',      sound:'[n] like "n" in night',     speak:'νερό',       greekEx:'νερό (water)' },
+  { letter:'Ξ ξ', name:'ξι',      sound:'[ks] like "x" in box',      speak:'ξενοδοχείο', greekEx:'ξενοδοχείο (hotel)' },
+  { letter:'Ο ο', name:'όμικρον', sound:'[o] like "o" in orange',    speak:'όνομα',      greekEx:'όνομα (name)' },
+  { letter:'Π π', name:'πι',      sound:'[p] like "p" in pan',       speak:'παραλία',    greekEx:'παραλία (beach)' },
+  { letter:'Ρ ρ', name:'ρο',      sound:'[r] rolled "r"',            speak:'ρολόι',      greekEx:'ρολόι (watch/clock)' },
+  { letter:'Σ σ/ς',name:'σίγμα',  sound:'[s] like "s" in sun',       speak:'σπίτι',      greekEx:'σπίτι (house)' },
+  { letter:'Τ τ', name:'ταυ',     sound:'[t] like "t" in top',       speak:'τραπέζι',    greekEx:'τραπέζι (table)' },
+  { letter:'Υ υ', name:'ύψιλον',  sound:'[i] like "ee" in see',      speak:'ύπνος',      greekEx:'ύπνος (sleep)' },
+  { letter:'Φ φ', name:'φι',      sound:'[f] like "f" in fun',       speak:'φίλος',      greekEx:'φίλος (friend)' },
+  { letter:'Χ χ', name:'χι',      sound:'[h/x] like "h" or soft kh', speak:'χρώμα',      greekEx:'χρώμα (colour)' },
+  { letter:'Ψ ψ', name:'ψι',      sound:'[ps] like "ps" in lips',    speak:'ψωμί',       greekEx:'ψωμί (bread)' },
+  { letter:'Ω ω', name:'ωμέγα',   sound:'[o] like "o" in orange',    speak:'ώρα',        greekEx:'ώρα (hour/time)' },
+];
+
+// Greek word examples for diphthongs — taken from real vocabulary
+const DIPHTHONGS = [
+  { letter:'ΑΙ αι', name:'άλφα γιώτα',       sound:'[e] — same as ε',        greekEx:'αίμα (blood)',        example:'αίμα' },
+  { letter:'ΕΙ ει', name:'έψιλον γιώτα',     sound:'[i] — same as η, ι',     greekEx:'είμαι (I am)',        example:'είμαι' },
+  { letter:'ΟΙ οι', name:'όμικρον γιώτα',    sound:'[i] — same as η, ι',     greekEx:'οικογένεια (family)', example:'οικογένεια' },
+  { letter:'ΥΙ υι', name:'ύψιλον γιώτα',     sound:'[i] — same as η, ι',     greekEx:'υιός (son)',          example:'υιός' },
+  { letter:'ΟΥ ου', name:'όμικρον ύψιλον',   sound:'[u] like "oo" in moon',  greekEx:'ουρανός (sky)',       example:'ουρανός' },
+  { letter:'ΑΥ αυ', name:'άλφα ύψιλον',
+    sound:'[av] before vowels / [af] before consonants',
+    greekEx:'αύριο (tomorrow) → αv',
+    greekEx2:'αυτός (he/this) → αf',
+    example:'αύριο / αυτός' },
+  { letter:'ΕΥ ευ', name:'έψιλον ύψιλον',
+    sound:'[ev] before vowels / [ef] before consonants',
+    greekEx:'ευρώ (euro) → ev',
+    greekEx2:'ευχαριστώ (thank you) → ef',
+    example:'ευρώ / ευχαριστώ' },
+  { letter:'ΜΠ μπ', name:'μι πι',           sound:'[b] like "b" in ball',    greekEx:'μπαρ (bar)',           example:'μπαρ' },
+  { letter:'ΝΤ ντ', name:'νι ταυ',          sound:'[d/nd] like "d" in dog',  greekEx:'ντομάτα (tomato)',     example:'ντομάτα' },
+  { letter:'ΓΚ γκ', name:'γάμα κάπα',       sound:'[g] like "g" in go',      greekEx:'γκαρσόν (waiter)',     example:'γκαρσόν' },
+  { letter:'ΤΣ τσ', name:'ταυ σίγμα',       sound:'[ts] like "ts" in cats',  greekEx:'τσάι (tea)',           example:'τσάι' },
+  { letter:'ΤΖ τζ', name:'ταυ ζήτα',        sound:'[dz] like "ds" in kids',  greekEx:'τζάμι (glass/window)', example:'τζάμι' },
+];
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+
+let curMode = 'letters';
+let q = [], idx = 0, cor = 0, wr = 0, str = 0, mist = [], answered = false;
+// Track how many times each letter has been missed this session
+let missCount = {};
+
+function shuf(a) {
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+// ─────────────────────────────────────────────
+// SMARTER REPETITION SCHEDULING
+// After a wrong answer:
+//   1. Insert a copy immediately after current idx  (_retry: 'immediate')
+//   2. Insert another copy 3–5 questions later       (_retry: 'delayed')
+// ─────────────────────────────────────────────
+function scheduleRetries(item) {
+  const remaining = q.length - (idx + 1);
+
+  // Immediate retry — right next
+  q.splice(idx + 1, 0, { ...item, _retry: 'immediate' });
+
+  // Delayed retry — 3 to 5 questions after the immediate one
+  const delay = Math.min(3 + Math.floor(Math.random() * 3), remaining + 1);
+  const delayPos = idx + 2 + delay; // +2 because we just inserted one
+  if (delayPos <= q.length) {
+    q.splice(delayPos, 0, { ...item, _retry: 'delayed' });
+  } else {
+    q.push({ ...item, _retry: 'delayed' });
+  }
+}
+
+// ─────────────────────────────────────────────
+// MODE SWITCHING
+// ─────────────────────────────────────────────
+function switchMode(m) {
+  ['tab-letters','tab-sounds','tab-diphthongs','tab-ref'].forEach(id =>
+    document.getElementById(id).classList.remove('active')
+  );
+  document.getElementById('ref-view').style.display = 'none';
+  document.getElementById('finish-view').style.display = 'none';
+  document.getElementById('quiz-view').style.display = 'block';
+  document.getElementById('score-bar').style.display = 'flex';
+
+  if (m === 'ref') {
+    document.getElementById('tab-ref').classList.add('active');
+    document.getElementById('quiz-view').style.display = 'none';
+    document.getElementById('score-bar').style.display = 'none';
+    buildRef();
+    document.getElementById('ref-view').style.display = 'block';
+    return;
+  }
+
+  curMode = m;
+  document.getElementById('tab-' + m).classList.add('active');
+
+  const rules = {
+    letters:    'See a <strong>Greek letter</strong> — choose its correct name (e.g. Α = άλφα). Wrong answers come back immediately, then again later.',
+    sounds:     'See a <strong>letter</strong> — choose the correct sound. Each question shows a Greek example word. Wrong answers come back twice.',
+    diphthongs: 'See a <strong>letter combination</strong> — choose its sound. Each question shows a Greek example word. Wrong answers come back twice.',
+  };
+  document.getElementById('rule-box').innerHTML = rules[m];
+
+  startQuiz();
+}
+
+function backFromRef() {
+  document.getElementById('ref-view').style.display = 'none';
+  document.getElementById('score-bar').style.display = 'flex';
+  document.getElementById('quiz-view').style.display = 'block';
+  document.getElementById('tab-ref').classList.remove('active');
+  document.getElementById('tab-' + curMode).classList.add('active');
+}
+
+// ─────────────────────────────────────────────
+// REFERENCE SHEET
+// ─────────────────────────────────────────────
+function buildRef() {
+  const lg = document.getElementById('ref-letters');
+  lg.innerHTML = '';
+  LETTERS.forEach(l => {
+    const d = document.createElement('div');
+    d.className = 'ref-card';
+    d.innerHTML = `<div class="ref-letter">${l.letter}</div>
+      <div class="ref-info">
+        <div class="ref-name">${l.name}</div>
+        <div class="ref-sound">${l.sound}</div>
+        <div class="ref-sound" style="color:var(--mid);font-style:italic">${l.greekEx}</div>
+      </div>`;
+    lg.appendChild(d);
+  });
+
+  const dg = document.getElementById('ref-diphs');
+  dg.innerHTML = '';
+  DIPHTHONGS.forEach(l => {
+    const d = document.createElement('div');
+    d.className = 'ref-card';
+    d.innerHTML = `<div class="ref-letter" style="font-size:1.1rem">${l.letter}</div>
+      <div class="ref-info">
+        <div class="ref-name">${l.name}</div>
+        <div class="ref-sound">${l.sound}</div>
+        <div class="ref-sound" style="color:var(--mid);font-style:italic">${l.greekEx}${l.greekEx2 ? '<br>' + l.greekEx2 : ''}</div>
+      </div>`;
+    dg.appendChild(d);
+  });
+}
+
+// ─────────────────────────────────────────────
+// START QUIZ
+// ─────────────────────────────────────────────
+function startQuiz() {
+  const pool = curMode === 'diphthongs' ? DIPHTHONGS : LETTERS;
+  q = shuf([...pool]);
+  idx = 0; cor = 0; wr = 0; str = 0; mist = []; missCount = {};
+  document.getElementById('sc').textContent = 0;
+  document.getElementById('sw').textContent = 0;
+  document.getElementById('ss').textContent = 0;
+  document.getElementById('finish-view').style.display = 'none';
+  document.getElementById('quiz-view').style.display = 'block';
+  showQ();
+}
+
+function restartCurrent() {
+  document.getElementById('finish-view').style.display = 'none';
+  document.getElementById('quiz-view').style.display = 'block';
+  startQuiz();
+}
+
+// ─────────────────────────────────────────────
+// SHOW QUESTION
+// ─────────────────────────────────────────────
+function showQ() {
+  answered = false;
+  const item = q[idx];
+  const retryType = item._retry || null;
+
+  document.getElementById('retry-badge').style.display = retryType === 'immediate' ? 'block' : 'none';
+  document.getElementById('later-badge').style.display = retryType === 'delayed' ? 'block' : 'none';
+  document.getElementById('fb').style.display = 'none';
+  document.getElementById('nb').style.display = 'none';
+  document.getElementById('prog').textContent = 'Question ' + (idx + 1) + ' of ' + q.length;
+
+  const pool = curMode === 'diphthongs' ? DIPHTHONGS : LETTERS;
+
+  if (curMode === 'letters') {
+    document.getElementById('qhint').textContent = 'What is the name of this letter?';
+    document.getElementById('qmain').textContent = item.letter;
+    document.getElementById('qsub').textContent = '';
+    const wrongs = shuf(pool.filter(x => x.name !== item.name)).slice(0, 3).map(x => x.name);
+    buildChoices(shuf([item.name, ...wrongs]), item.name, item);
+
+  } else if (curMode === 'sounds') {
+    document.getElementById('qhint').textContent = 'What sound does this letter make?';
+    document.getElementById('qmain').textContent = item.letter;
+    document.getElementById('qsub').textContent = item.name + ' · e.g. ' + item.greekEx;
+    const wrongs = shuf(pool.filter(x => x.sound !== item.sound)).slice(0, 3).map(x => x.sound);
+    buildChoices(shuf([item.sound, ...wrongs]), item.sound, item);
+
+  } else {
+    document.getElementById('qhint').textContent = 'What sound does this combination make?';
+    document.getElementById('qmain').textContent = item.letter;
+    const exSub = item.greekEx2
+      ? item.name + ' · ' + item.greekEx + ' / ' + item.greekEx2
+      : item.name + ' · e.g. ' + item.greekEx;
+    document.getElementById('qsub').textContent = exSub;
+    const wrongs = shuf(pool.filter(x => x.sound !== item.sound)).slice(0, 3).map(x => x.sound);
+    buildChoices(shuf([item.sound, ...wrongs]), item.sound, item);
+  }
+}
+
+// ─────────────────────────────────────────────
+// BUILD CHOICES
+// ─────────────────────────────────────────────
+function buildChoices(opts, correctLabel, item) {
+  const cc = document.getElementById('choices');
+  cc.innerHTML = '';
+  opts.forEach(opt => {
+    const b = document.createElement('button');
+    b.className = 'choice-btn';
+    b.textContent = opt;
+    b.onclick = () => pickAns(opt, correctLabel, item);
+    cc.appendChild(b);
+  });
+}
+
+// ─────────────────────────────────────────────
+// PICK ANSWER
+// ─────────────────────────────────────────────
+function pickAns(chosen, correctLabel, item) {
+  if (answered) return;
+  answered = true;
+
+  const isCorrect = chosen === correctLabel;
+
+  document.querySelectorAll('.choice-btn').forEach(b => {
+    b.disabled = true;
+    if (b.textContent === correctLabel) b.classList.add(isCorrect ? 'correct' : 'reveal');
+    else if (b.textContent === chosen && !isCorrect) b.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('fb');
+  fb.style.display = 'block';
+
+  if (isCorrect) {
+    cor++; str++;
+    fb.className = 'feedback correct';
+    const exLine = (curMode === 'diphthongs' || curMode === 'sounds')
+      ? ' · e.g. <em>' + item.greekEx + (item.greekEx2 ? ' / ' + item.greekEx2 : '') + '</em>'
+      : '';
+    fb.innerHTML = '✓ Correct! <strong>' + item.letter + '</strong> — ' + item.name + ' — ' + item.sound + exLine;
+    document.getElementById('nb').style.display = 'block';
+    document.getElementById('nb').textContent = 'Next →';
+  } else {
+    wr++; str = 0;
+    fb.className = 'feedback wrong';
+    const exLine = (curMode === 'diphthongs' || curMode === 'sounds')
+      ? ' · e.g. <em>' + item.greekEx + (item.greekEx2 ? ' / ' + item.greekEx2 : '') + '</em>'
+      : '';
+    fb.innerHTML = '✗ It\'s <strong>' + correctLabel + '</strong> (' + item.name + ') — ' + item.sound + exLine;
+    mist.push(item);
+    missCount[item.letter] = (missCount[item.letter] || 0) + 1;
+    // Schedule: immediate + delayed retry (only if not already a retry to avoid infinite loops)
+    if (!item._retry) {
+      scheduleRetries(item);
+    } else if (item._retry === 'immediate') {
+      // On second fail, still push a delayed retry
+      q.splice(idx + 1, 0, { ...item, _retry: 'immediate' });
+      const delayPos = Math.min(idx + 4, q.length);
+      q.splice(delayPos, 0, { ...item, _retry: 'delayed' });
+    } else {
+      // Delayed retry also failed — add one more immediate
+      q.splice(idx + 1, 0, { ...item, _retry: 'immediate' });
+    }
+    document.getElementById('nb').style.display = 'block';
+    document.getElementById('nb').textContent = 'Try again →';
+  }
+
+  document.getElementById('sc').textContent = cor;
+  document.getElementById('sw').textContent = wr;
+  document.getElementById('ss').textContent = str;
+}
+
+// ─────────────────────────────────────────────
+// NEXT
+// ─────────────────────────────────────────────
+function nextQ() {
+  document.getElementById('nb').textContent = 'Next →';
+  idx++;
+  if (idx >= q.length) showFinish();
+  else showQ();
+}
+
+// ─────────────────────────────────────────────
+// FINISH
+// ─────────────────────────────────────────────
+function showFinish() {
+  document.getElementById('quiz-view').style.display = 'none';
+  const tot = cor + wr, pct = tot ? Math.round(cor / tot * 100) : 0;
+  document.getElementById('fin-msg').textContent =
+    pct >= 90 ? 'Excellent! 🎉' : pct >= 70 ? 'Good progress! 👍' : 'Keep going! 📚';
+  document.getElementById('fin-score').textContent =
+    cor + ' correct out of ' + tot + ' (' + pct + '%)';
+  const mm = document.getElementById('fin-mistakes');
+  mm.innerHTML = '';
+  if (mist.length) {
+    const hdr = document.createElement('p');
+    hdr.style.cssText = 'font-size:13px;color:var(--muted);margin-bottom:8px';
+    hdr.textContent = 'Letters/combinations to review:';
+    mm.appendChild(hdr);
+    const seen = new Set();
+    mist.forEach(m => {
+      if (!seen.has(m.letter)) {
+        seen.add(m.letter);
+        const d = document.createElement('div');
+        d.className = 'mistake-item';
+        d.innerHTML = '<strong>' + m.letter + '</strong> — ' + m.name + ' — ' + m.sound;
+        mm.appendChild(d);
+      }
+    });
+  } else {
+    mm.innerHTML = '<p style="color:#3B6D11;font-size:14px">Perfect — no mistakes!</p>';
+  }
+  document.getElementById('finish-view').style.display = 'block';
+}
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+switchMode('letters');
+</script>
+</body>
+</html>

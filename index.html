@@ -304,17 +304,11 @@ nav {
 .card[data-c="amber"] { --card-color: #b8782a; }
 
 .card-img-wrap {
-  height: 130px;
+  height: 180px;
   overflow: hidden;
+  display: flex;
 }
-.card-img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
-  filter: saturate(0.7) brightness(1.05);
-  transition: transform .4s ease, filter .3s;
-}
-.card:hover .card-img { transform: scale(1.07); filter: saturate(1) brightness(1.05); }
+.card-img-wrap svg { width: 100%; height: 100%; display: block; }
 
 .card-body {
   padding: 1.1rem 1.25rem 1.3rem;
@@ -502,7 +496,22 @@ footer {
 
   <a class="card" href="greek_gender_v4_fixed.html" data-c="blue">
     <div class="card-img-wrap">
-      <img class="card-img" src="https://images.unsplash.com/photo-1571083881086-f77f6e1c4c2b?w=600&q=80" alt="" loading="lazy">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="100%" height="100%">
+        <rect width="600" height="400" fill="#1b3f72"/>
+        <g stroke="white" stroke-width="2" fill="none" opacity="0.15">
+          <polyline points="0,16 10,16 10,6 20,6 20,16 30,16 30,6 40,6 40,16 50,16 50,6 60,6 60,16 70,16 70,6 80,6 80,16 90,16 90,6 100,6 100,16 110,16 110,6 120,6 120,16 130,16 130,6 140,6 140,16 150,16 150,6 160,6 160,16 170,16 170,6 180,6 180,16 190,16 190,6 200,6 200,16 210,16 210,6 220,6 220,16 230,16 230,6 240,6 240,16 250,16 250,6 260,6 260,16 270,16 270,6 280,6 280,16 290,16 290,6 300,6 300,16 310,16 310,6 320,6 320,16 330,16 330,6 340,6 340,16 350,16 350,6 360,6 360,16 370,16 370,6 380,6 380,16 390,16 390,6 400,6 400,16 410,16 410,6 420,6 420,16 430,16 430,6 440,6 440,16 450,16 450,6 460,6 460,16 470,16 470,6 480,6 480,16 490,16 490,6 500,6 500,16 510,16 510,6 520,6 520,16 530,16 530,6 540,6 540,16 550,16 550,6 560,6 560,16 570,16 570,6 580,6 580,16 590,16 590,6 600,6"/>
+        </g>
+        <rect x="55"  y="55" width="145" height="195" rx="10" fill="none" stroke="white" stroke-width="2.5" opacity="0.85"/>
+        <text x="128" y="175" font-family="Georgia,serif" font-size="105" fill="white" text-anchor="middle" dominant-baseline="middle">ο</text>
+        <text x="128" y="265" font-family="Georgia,serif" font-size="13" fill="white" text-anchor="middle" opacity="0.5" letter-spacing="2">MASC</text>
+        <rect x="228" y="55" width="145" height="195" rx="10" fill="white" fill-opacity="0.12" stroke="white" stroke-width="2.5" opacity="0.85"/>
+        <text x="300" y="175" font-family="Georgia,serif" font-size="105" fill="white" text-anchor="middle" dominant-baseline="middle">η</text>
+        <text x="300" y="265" font-family="Georgia,serif" font-size="13" fill="white" text-anchor="middle" opacity="0.5" letter-spacing="2">FEM</text>
+        <rect x="400" y="55" width="145" height="195" rx="10" fill="none" stroke="white" stroke-width="2.5" opacity="0.85"/>
+        <text x="472" y="175" font-family="Georgia,serif" font-size="76" fill="white" text-anchor="middle" dominant-baseline="middle">το</text>
+        <text x="472" y="265" font-family="Georgia,serif" font-size="13" fill="white" text-anchor="middle" opacity="0.5" letter-spacing="2">NEUT</text>
+        <text x="300" y="345" font-family="Georgia,serif" font-size="18" fill="white" text-anchor="middle" opacity="0.6" letter-spacing="5">NOUN GENDER</text>
+      </svg>
     </div>
     <div class="card-body">
       <div class="card-num">01 · Grammar</div>
@@ -514,7 +523,25 @@ footer {
 
   <a class="card" href="greek_colours.html" data-c="rose">
     <div class="card-img-wrap">
-      <img class="card-img" src="https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=600&q=80" alt="" loading="lazy">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="100%" height="100%">
+        <rect width="600" height="400" fill="#f8fcff"/>
+        <rect x="0" y="0" width="600" height="8" fill="#1b3f72"/>
+        <text x="300" y="165" font-family="Georgia,serif" font-size="96" fill="#1b3f72" text-anchor="middle" dominant-baseline="middle" font-weight="bold">ΧΡΏΜΑ</text>
+        <text x="300" y="230" font-family="Georgia,serif" font-size="14" fill="#1b3f72" text-anchor="middle" opacity="0.45" letter-spacing="5">COLOURS</text>
+        <rect x="0"   y="270" width="100" height="90" fill="#E53935"/>
+        <rect x="100" y="270" width="100" height="90" fill="#1E88E5"/>
+        <rect x="200" y="270" width="100" height="90" fill="#43A047"/>
+        <rect x="300" y="270" width="100" height="90" fill="#FDD835"/>
+        <rect x="400" y="270" width="100" height="90" fill="#FB8C00"/>
+        <rect x="500" y="270" width="100" height="90" fill="#8E24AA"/>
+        <text x="50"  y="322" font-family="Georgia,serif" font-size="11" fill="white" text-anchor="middle" font-weight="bold">κόκκινο</text>
+        <text x="150" y="322" font-family="Georgia,serif" font-size="11" fill="white" text-anchor="middle" font-weight="bold">μπλε</text>
+        <text x="250" y="322" font-family="Georgia,serif" font-size="11" fill="white" text-anchor="middle" font-weight="bold">πράσινο</text>
+        <text x="350" y="322" font-family="Georgia,serif" font-size="11" fill="#1b3f72" text-anchor="middle" font-weight="bold">κίτρινο</text>
+        <text x="450" y="316" font-family="Georgia,serif" font-size="10" fill="white" text-anchor="middle" font-weight="bold">πορτο-</text>
+        <text x="450" y="330" font-family="Georgia,serif" font-size="10" fill="white" text-anchor="middle" font-weight="bold">καλί</text>
+        <text x="550" y="322" font-family="Georgia,serif" font-size="11" fill="white" text-anchor="middle" font-weight="bold">μωβ</text>
+      </svg>
     </div>
     <div class="card-body">
       <div class="card-num">02 · Vocabulary</div>
@@ -526,7 +553,30 @@ footer {
 
   <a class="card" href="greek_pronouns_practice.html" data-c="teal">
     <div class="card-img-wrap">
-      <img class="card-img" src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80" alt="" loading="lazy">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="100%" height="100%">
+        <rect width="600" height="400" fill="#1b3f72"/>
+        <rect x="40"  y="45"  width="155" height="70" rx="35" fill="white" fill-opacity="0.12" stroke="white" stroke-width="1.8"/>
+        <text x="117" y="82"  font-family="Georgia,serif" font-size="32" fill="white" text-anchor="middle" dominant-baseline="middle">εγώ</text>
+        <rect x="225" y="45"  width="155" height="70" rx="35" fill="white" fill-opacity="0.22" stroke="white" stroke-width="1.8"/>
+        <text x="302" y="82"  font-family="Georgia,serif" font-size="32" fill="white" text-anchor="middle" dominant-baseline="middle">εσύ</text>
+        <rect x="410" y="45"  width="155" height="70" rx="35" fill="white" fill-opacity="0.12" stroke="white" stroke-width="1.8"/>
+        <text x="487" y="82"  font-family="Georgia,serif" font-size="28" fill="white" text-anchor="middle" dominant-baseline="middle">αυτός</text>
+        <rect x="40"  y="140" width="155" height="70" rx="35" fill="white" fill-opacity="0.22" stroke="white" stroke-width="1.8"/>
+        <text x="117" y="177" font-family="Georgia,serif" font-size="28" fill="white" text-anchor="middle" dominant-baseline="middle">εμείς</text>
+        <rect x="225" y="140" width="155" height="70" rx="35" fill="white" fill-opacity="0.08" stroke="white" stroke-width="1.8"/>
+        <text x="302" y="177" font-family="Georgia,serif" font-size="28" fill="white" text-anchor="middle" dominant-baseline="middle">εσείς</text>
+        <rect x="410" y="140" width="155" height="70" rx="35" fill="white" fill-opacity="0.22" stroke="white" stroke-width="1.8"/>
+        <text x="487" y="177" font-family="Georgia,serif" font-size="28" fill="white" text-anchor="middle" dominant-baseline="middle">αυτή</text>
+        <rect x="40"  y="240" width="110" height="52" rx="26" fill="none" stroke="white" stroke-width="1.5" opacity="0.5"/>
+        <text x="95"  y="268" font-family="Georgia,serif" font-size="24" fill="white" text-anchor="middle" dominant-baseline="middle" opacity="0.8">μου</text>
+        <rect x="168" y="240" width="110" height="52" rx="26" fill="none" stroke="white" stroke-width="1.5" opacity="0.5"/>
+        <text x="223" y="268" font-family="Georgia,serif" font-size="24" fill="white" text-anchor="middle" dominant-baseline="middle" opacity="0.8">σου</text>
+        <rect x="296" y="240" width="110" height="52" rx="26" fill="none" stroke="white" stroke-width="1.5" opacity="0.5"/>
+        <text x="351" y="268" font-family="Georgia,serif" font-size="24" fill="white" text-anchor="middle" dominant-baseline="middle" opacity="0.8">του</text>
+        <rect x="424" y="240" width="140" height="52" rx="26" fill="none" stroke="white" stroke-width="1.5" opacity="0.5"/>
+        <text x="494" y="268" font-family="Georgia,serif" font-size="24" fill="white" text-anchor="middle" dominant-baseline="middle" opacity="0.8">τους</text>
+        <text x="300" y="352" font-family="Georgia,serif" font-size="18" fill="white" text-anchor="middle" opacity="0.6" letter-spacing="5">PRONOUNS</text>
+      </svg>
     </div>
     <div class="card-body">
       <div class="card-num">03 · Grammar</div>
@@ -538,19 +588,54 @@ footer {
 
   <a class="card" href="greek_numbers_practice.html" data-c="amber">
     <div class="card-img-wrap">
-      <img class="card-img" src="https://images.unsplash.com/photo-1509228468518-180dd4864904?w=600&q=80" alt="" loading="lazy">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="100%" height="100%">
+        <rect width="600" height="400" fill="#f8fcff"/>
+        <rect x="0" y="0" width="10" height="400" fill="#1b3f72"/>
+        <text x="300" y="220" font-family="Georgia,serif" font-size="300" fill="#1b3f72" fill-opacity="0.05" text-anchor="middle" dominant-baseline="middle" font-weight="bold">100</text>
+        <text x="75"  y="122" font-family="Georgia,serif" font-size="48" fill="#1b3f72" font-weight="bold">1</text>
+        <text x="120" y="122" font-family="Georgia,serif" font-size="30" fill="#3468a8" opacity="0.85">ένα</text>
+        <text x="258" y="175" font-family="Georgia,serif" font-size="48" fill="#1b3f72" font-weight="bold">10</text>
+        <text x="318" y="175" font-family="Georgia,serif" font-size="30" fill="#3468a8" opacity="0.85">δέκα</text>
+        <text x="65"  y="238" font-family="Georgia,serif" font-size="48" fill="#1b3f72" font-weight="bold">50</text>
+        <text x="128" y="238" font-family="Georgia,serif" font-size="30" fill="#3468a8" opacity="0.85">πενήντα</text>
+        <text x="250" y="295" font-family="Georgia,serif" font-size="48" fill="#1b3f72" font-weight="bold">100</text>
+        <text x="338" y="295" font-family="Georgia,serif" font-size="30" fill="#3468a8" opacity="0.85">εκατό</text>
+        <text x="320" y="355" font-family="Georgia,serif" font-size="18" fill="#1b3f72" text-anchor="middle" opacity="0.45" letter-spacing="5">NUMBERS</text>
+      </svg>
     </div>
     <div class="card-body">
       <div class="card-num">04 · Numbers</div>
-      <div class="card-title">Numbers 1–100</div>
-      <p class="card-desc">Multiple choice, type-it, and sequence modes. Ένα to εκατό.</p>
+      <div class="card-title">Numbers 0–1,000,000</div>
+      <p class="card-desc">Multiple choice, type-it, and sequence modes. From μηδέν to εκατομμύριο.</p>
       <div class="card-play">Play now <span class="card-play-arrow">→</span></div>
     </div>
   </a>
 
   <a class="card" href="greek_alphabet.html" data-c="teal">
     <div class="card-img-wrap">
-      <img class="card-img" src="https://images.unsplash.com/photo-1603565816030-6b389eeb23cb?w=600&q=80" alt="" loading="lazy">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="100%" height="100%">
+        <rect width="600" height="400" fill="#1b3f72"/>
+        <text x="20"  y="170" font-family="Georgia,serif" font-size="150" fill="white" fill-opacity="0.04" font-weight="bold">Α</text>
+        <text x="380" y="300" font-family="Georgia,serif" font-size="150" fill="white" fill-opacity="0.04" font-weight="bold">Ω</text>
+        <text x="55"  y="110" font-family="Georgia,serif" font-size="52" fill="white" fill-opacity="0.5">Β</text>
+        <text x="128" y="88"  font-family="Georgia,serif" font-size="40" fill="white" fill-opacity="0.32">Γ</text>
+        <text x="198" y="118" font-family="Georgia,serif" font-size="56" fill="white" fill-opacity="0.55">Δ</text>
+        <text x="282" y="92"  font-family="Georgia,serif" font-size="44" fill="white" fill-opacity="0.38">Ε</text>
+        <text x="352" y="122" font-family="Georgia,serif" font-size="50" fill="white" fill-opacity="0.45">Ζ</text>
+        <text x="438" y="96"  font-family="Georgia,serif" font-size="40" fill="white" fill-opacity="0.32">Η</text>
+        <text x="508" y="128" font-family="Georgia,serif" font-size="54" fill="white" fill-opacity="0.5">Θ</text>
+        <text x="42"  y="228" font-family="Georgia,serif" font-size="46" fill="white" fill-opacity="0.4">Κ</text>
+        <text x="172" y="210" font-family="Georgia,serif" font-size="52" fill="white" fill-opacity="0.45">Μ</text>
+        <text x="332" y="242" font-family="Georgia,serif" font-size="48" fill="white" fill-opacity="0.4">Ξ</text>
+        <text x="508" y="244" font-family="Georgia,serif" font-size="50" fill="white" fill-opacity="0.44">Ρ</text>
+        <text x="60"  y="328" font-family="Georgia,serif" font-size="42" fill="white" fill-opacity="0.35">Σ</text>
+        <text x="218" y="335" font-family="Georgia,serif" font-size="40" fill="white" fill-opacity="0.33">Φ</text>
+        <text x="384" y="338" font-family="Georgia,serif" font-size="44" fill="white" fill-opacity="0.35">Ψ</text>
+        <text x="468" y="318" font-family="Georgia,serif" font-size="48" fill="white" fill-opacity="0.4">Ω</text>
+        <rect x="158" y="145" width="284" height="108" rx="12" fill="white" fill-opacity="0.1" stroke="white" stroke-width="2"/>
+        <text x="300" y="202" font-family="Georgia,serif" font-size="64" fill="white" text-anchor="middle" dominant-baseline="middle" font-weight="bold">Α … Ω</text>
+        <text x="300" y="372" font-family="Georgia,serif" font-size="17" fill="white" text-anchor="middle" opacity="0.6" letter-spacing="4">ALPHABET &amp; SOUNDS</text>
+      </svg>
     </div>
     <div class="card-body">
       <div class="card-num">05 · Alphabet</div>

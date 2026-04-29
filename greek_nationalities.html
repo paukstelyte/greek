@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greek Nationalities</title>
+<style>
+  :root{
+    --bg:#deeef8;--surface:#fff;--surface2:#edf5fc;
+    --ink:#0e1621;--blue:#1b3f72;--mid:#3468a8;--sky:#6aaad4;
+    --fog:#c8dff0;--muted:#5a7a96;
+    --border:rgba(100,160,210,0.25);--border2:rgba(100,160,210,0.4);
+    --r:14px;
+  }
+  @media(prefers-color-scheme:dark){:root{
+    --bg:#0e1a26;--surface:#162030;--surface2:#1e2e40;
+    --ink:#e8f2fa;--muted:#7aaac8;
+    --border:rgba(100,160,210,0.15);--border2:rgba(100,160,210,0.3);
+  }}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+  nav{background:var(--blue);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;}
+  .nav-title{font-size:1rem;font-weight:700;letter-spacing:.06em;color:#fff;text-transform:uppercase;}
+  .nav-title span{color:var(--fog);font-weight:300;}
+  .tabs{display:flex;gap:5px;padding:1.1rem 1.5rem .5rem;max-width:760px;margin:0 auto;flex-wrap:wrap;}
+  .tab{flex:1;min-width:90px;padding:.5rem .3rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--muted);font-size:11px;font-weight:500;cursor:pointer;text-align:center;transition:all .15s;line-height:1.3;}
+  .tab.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+  .score-bar{display:flex;gap:10px;padding:0 1.5rem 1rem;max-width:760px;margin:0 auto;}
+  .score-card{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.6rem;text-align:center;}
+  .score-label{font-size:11px;color:var(--muted);margin-bottom:2px;}
+  .score-val{font-size:20px;font-weight:700;}
+  .wrap{max-width:760px;margin:0 auto;padding:0 1.5rem 4rem;}
+  .rule-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.875rem 1.1rem;margin-bottom:1rem;font-size:13px;color:var(--muted);line-height:1.7;}
+  .rule-box strong{color:var(--ink);font-weight:600;}
+  .progress{font-size:12px;color:var(--muted);text-align:center;margin-bottom:.5rem;}
+  .q-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.6rem 1.5rem;text-align:center;margin-bottom:1rem;position:relative;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem;}
+  .q-type-badge{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--surface);background:var(--mid);padding:3px 10px;border-radius:20px;margin-bottom:.2rem;}
+  .q-english{font-size:1.05rem;color:var(--muted);font-style:italic;}
+  .q-hint{font-size:12px;color:var(--muted);}
+  .q-main{font-size:2rem;font-weight:700;color:var(--ink);line-height:1.2;}
+  .q-sub{font-size:13px;color:var(--muted);}
+  .retry-badge{position:absolute;top:10px;right:12px;background:#fef3e2;color:#854F0B;font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;}
+  .later-badge{position:absolute;top:10px;left:12px;background:#e8f0fb;color:#1a4a8a;font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;}
+  .sentence-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.75rem 1.5rem;margin-bottom:1rem;position:relative;}
+  .sentence-label{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--surface);background:var(--mid);padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:.75rem;}
+  .sentence-text{font-size:1.3rem;color:var(--ink);line-height:2.1;text-align:center;margin-bottom:.4rem;}
+  .blank{display:inline-block;min-width:140px;border-bottom:2.5px solid var(--mid);color:var(--mid);font-weight:700;padding:0 6px;vertical-align:bottom;text-align:center;}
+  .sentence-translation{font-size:13px;color:var(--muted);font-style:italic;text-align:center;line-height:1.6;}
+  .sentence-retry{position:absolute;top:10px;right:12px;background:#fef3e2;color:#854F0B;font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;}
+  .sentence-later{position:absolute;top:10px;left:12px;background:#e8f0fb;color:#1a4a8a;font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem;}
+  .choice-btn{padding:.7rem .5rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--ink);font-size:14px;cursor:pointer;font-family:inherit;text-align:center;line-height:1.35;transition:background .12s;}
+  .choice-btn:hover:not(:disabled){background:var(--surface2);}
+  .choice-btn.correct{background:#EAF3DE;border-color:#639922;color:#3B6D11;}
+  .choice-btn.wrong{background:#FCEBEB;border-color:#E24B4A;color:#A32D2D;}
+  .choice-btn.reveal{background:#EAF3DE;border-color:#639922;color:#3B6D11;}
+  .feedback{border-radius:var(--r);padding:.875rem 1rem;margin-bottom:1rem;font-size:14px;line-height:1.65;}
+  .feedback.correct{background:#EAF3DE;color:#3B6D11;border:1px solid #639922;}
+  .feedback.wrong{background:#FCEBEB;color:#A32D2D;border:1px solid #E24B4A;}
+  .next-btn{width:100%;padding:.75rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface2);color:var(--ink);font-size:15px;cursor:pointer;font-family:inherit;}
+  .next-btn:hover{background:var(--surface);}
+  .ref-wrap{overflow-x:auto;margin-bottom:1rem;}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  thead tr{background:var(--blue);color:#fff;}
+  thead th{padding:.55rem .65rem;text-align:left;font-weight:600;font-size:10px;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;}
+  tbody tr:nth-child(even){background:var(--surface2);}
+  tbody tr:nth-child(odd){background:var(--surface);}
+  tbody td{padding:.5rem .65rem;border-bottom:1px solid var(--border);vertical-align:top;}
+  tbody td:first-child{font-weight:600;color:var(--blue);}
+  .ref-back-btn{width:100%;padding:.75rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--ink);font-size:14px;cursor:pointer;font-family:inherit;margin-top:1rem;}
+  .pattern-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.875rem 1.1rem;margin-bottom:1rem;font-size:13px;color:var(--muted);line-height:1.8;}
+  .pattern-box strong{color:var(--ink);font-weight:600;}
+  .finish-screen{text-align:center;padding:2rem 1rem;}
+  .finish-screen h2{font-size:22px;font-weight:700;margin-bottom:.4rem;}
+  .mistake-item{background:#FCEBEB;border-radius:var(--r);padding:.65rem 1rem;margin-bottom:.4rem;font-size:14px;color:#A32D2D;text-align:left;line-height:1.5;}
+  .restart-btn{margin-top:1.25rem;padding:.75rem 2rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--ink);font-size:15px;cursor:pointer;font-family:inherit;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-title">Greek <span>Nationalities</span></div>
+  <div style="font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:.1em">Από πού;</div>
+</nav>
+
+<div class="tabs">
+  <div class="tab active" id="tab-country" onclick="switchMode('country')">Country</div>
+  <div class="tab"        id="tab-vocab"   onclick="switchMode('vocab')">Nationalities &amp; Language</div>
+  <div class="tab"        id="tab-fill"    onclick="switchMode('fill')">Sentences</div>
+  <div class="tab"        id="tab-ref"     onclick="switchMode('ref')">Reference</div>
+</div>
+
+<div class="score-bar" id="score-bar">
+  <div class="score-card"><div class="score-label">Correct</div><div class="score-val" id="sc">0</div></div>
+  <div class="score-card"><div class="score-label">Wrong</div><div class="score-val" id="sw">0</div></div>
+  <div class="score-card"><div class="score-label">Streak</div><div class="score-val" id="ss">0</div></div>
+</div>
+
+<div class="wrap">
+
+  <!-- COUNTRY QUIZ -->
+  <div id="country-view">
+    <div class="rule-box">See the <strong>English country name</strong> — choose the correct Greek word. Wrong answers come back immediately, then again later.</div>
+    <div class="progress" id="cprog">Question 1</div>
+    <div class="q-card" id="ccard">
+      <div class="retry-badge" id="cretry" style="display:none">↩ Try again</div>
+      <div class="later-badge" id="clater" style="display:none">🔁 Review</div>
+      <div class="q-type-badge">COUNTRY</div>
+      <div class="q-english" id="cenglish"></div>
+      <div class="q-hint">What is this country in Greek?</div>
+    </div>
+    <div class="choices" id="cchoices"></div>
+    <div class="feedback" id="cfb" style="display:none"></div>
+    <button class="next-btn" id="cnb" style="display:none" onclick="nextCountry()">Next →</button>
+  </div>
+
+  <!-- VOCAB QUIZ (masc / fem / lang / adj mixed) -->
+  <div id="vocab-view" style="display:none">
+    <div class="rule-box">Each question randomly asks about the <strong>male form</strong>, <strong>female form</strong>, <strong>language</strong>, or <strong>food adjective</strong> — the type is shown on the badge. All prompted from English. Wrong answers come back twice.</div>
+    <div class="progress" id="vprog">Question 1</div>
+    <div class="q-card" id="vcard">
+      <div class="retry-badge" id="vretry" style="display:none">↩ Try again</div>
+      <div class="later-badge" id="vlater" style="display:none">🔁 Review</div>
+      <div class="q-type-badge" id="vbadge"></div>
+      <div class="q-english"    id="venglish"></div>
+      <div class="q-main"       id="vmain"></div>
+      <div class="q-hint"       id="vhint"></div>
+      <div class="q-sub"        id="vsub"></div>
+    </div>
+    <div class="choices" id="vchoices"></div>
+    <div class="feedback" id="vfb" style="display:none"></div>
+    <button class="next-btn" id="vnb" style="display:none" onclick="nextVocab()">Next →</button>
+  </div>
+
+  <!-- SENTENCE FILL -->
+  <div id="fill-view" style="display:none">
+    <div class="rule-box">Read the sentence and choose the <strong>correct Greek word</strong> for the gap. The English translation helps you.</div>
+    <div class="progress" id="fprog">Question 1</div>
+    <div class="sentence-card" id="scard">
+      <div class="sentence-retry" id="sretry" style="display:none">↩ Try again</div>
+      <div class="sentence-later" id="slater" style="display:none">🔁 Review</div>
+      <div class="sentence-label">Fill in the blank</div>
+      <div class="sentence-text" id="stext"></div>
+      <div class="sentence-translation" id="stransl"></div>
+    </div>
+    <div class="choices" id="fchoices"></div>
+    <div class="feedback" id="ffb" style="display:none"></div>
+    <button class="next-btn" id="fnb" style="display:none" onclick="nextFill()">Next →</button>
+  </div>
+
+  <!-- REFERENCE -->
+  <div id="ref-view" style="display:none">
+    <div class="pattern-box">
+      <strong>Patterns:</strong> Most countries end in <strong>-ία</strong> &nbsp;·&nbsp;
+      Male: <strong>-ός / -ας / -έζος</strong> &nbsp;·&nbsp;
+      Female: <strong>-ίδα / -η / -έζα</strong> &nbsp;·&nbsp;
+      Language / adjective: <strong>-(εζ)ικά / -(εζ)ικό</strong>
+    </div>
+    <div class="ref-wrap">
+      <table><thead><tr>
+        <th>EN</th><th>Χώρα</th><th>Άνδρας</th><th>Γυναίκα</th><th>Γλώσσα</th><th>Επίθετο</th>
+      </tr></thead><tbody id="ref-body"></tbody></table>
+    </div>
+    <button class="ref-back-btn" onclick="backFromRef()">← Back to practice</button>
+  </div>
+
+  <!-- FINISH -->
+  <div id="finish-view" style="display:none">
+    <div class="finish-screen">
+      <h2 id="fin-msg"></h2>
+      <p id="fin-score" style="color:var(--muted);font-size:15px;margin-bottom:.5rem"></p>
+      <div id="fin-mistakes" style="margin-top:1rem;text-align:left"></div>
+      <button class="restart-btn" onclick="restartCurrent()">Practice again →</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────
+// DATA — 55 countries
+// ─────────────────────────────────────────────────────────
+const DATA = [
+  // From the lesson
+  {flag:'🇬🇷',en:'Greece',          country:'Ελλάδα',            masc:'Έλληνας',         fem:'Ελληνίδα',             lang:'ελληνικά',                        adj:'ελληνικό'},
+  {flag:'🇪🇸',en:'Spain',           country:'Ισπανία',           masc:'Ισπανός',          fem:'Ισπανίδα',             lang:'ισπανικά',                        adj:'ισπανικό'},
+  {flag:'🇩🇪',en:'Germany',         country:'Γερμανία',          masc:'Γερμανός',         fem:'Γερμανίδα',            lang:'γερμανικά',                       adj:'γερμανικό'},
+  {flag:'🇵🇱',en:'Poland',          country:'Πολωνία',           masc:'Πολωνός',          fem:'Πολωνίδα',             lang:'πολωνικά',                        adj:'πολωνικό'},
+  {flag:'🇮🇹',en:'Italy',           country:'Ιταλία',            masc:'Ιταλός',           fem:'Ιταλίδα',              lang:'ιταλικά',                         adj:'ιταλικό'},
+  {flag:'🇫🇷',en:'France',          country:'Γαλλία',            masc:'Γάλλος',           fem:'Γαλλίδα',              lang:'γαλλικά',                         adj:'γαλλικό'},
+  {flag:'🇨🇳',en:'China',           country:'Κίνα',              masc:'Κινέζος',          fem:'Κινέζα',               lang:'κινέζικα',                        adj:'κινεζικό'},
+  {flag:'🇯🇵',en:'Japan',           country:'Ιαπωνία',           masc:'Ιάπωνας',          fem:'Ιαπωνίδα',             lang:'ιαπωνικά',                        adj:'ιαπωνικό'},
+  {flag:'🇱🇹',en:'Lithuania',       country:'Λιθουανία',         masc:'Λιθουανός',        fem:'Λιθουανή',             lang:'λιθουανικά',                      adj:'λιθουανικό'},
+  {flag:'🇲🇽',en:'Mexico',          country:'Μεξικό',            masc:'Μεξικανός',        fem:'Μεξικανή',             lang:'ισπανικά',                        adj:'μεξικάνικο'},
+  {flag:'🇬🇧',en:'Britain',         country:'Βρετανία',          masc:'Βρετανός',         fem:'Βρετανίδα',            lang:'αγγλικά',                         adj:'βρετανικό'},
+  {flag:'🇷🇴',en:'Romania',         country:'Ρουμανία',          masc:'Ρουμάνος',         fem:'Ρουμανίδα',            lang:'ρουμάνικα',                       adj:'ρουμάνικο'},
+  {flag:'🇺🇸',en:'USA',             country:'ΗΠΑ / Αμερική',    masc:'Αμερικάνος',       fem:'Αμερικανίδα',          lang:'αγγλικά',                         adj:'αμερικάνικο'},
+  // Europe
+  {flag:'🇵🇹',en:'Portugal',        country:'Πορτογαλία',        masc:'Πορτογάλος',       fem:'Πορτογαλίδα',          lang:'πορτογαλικά',                     adj:'πορτογαλικό'},
+  {flag:'🇷🇺',en:'Russia',          country:'Ρωσία',             masc:'Ρώσος',            fem:'Ρωσίδα',               lang:'ρωσικά',                          adj:'ρωσικό'},
+  {flag:'🇸🇪',en:'Sweden',          country:'Σουηδία',           masc:'Σουηδός',          fem:'Σουηδίδα',             lang:'σουηδικά',                        adj:'σουηδικό'},
+  {flag:'🇳🇱',en:'Netherlands',     country:'Ολλανδία',          masc:'Ολλανδός',         fem:'Ολλανδίδα',            lang:'ολλανδικά',                       adj:'ολλανδικό'},
+  {flag:'🇹🇷',en:'Turkey',          country:'Τουρκία',           masc:'Τούρκος',          fem:'Τουρκάλα',             lang:'τουρκικά',                        adj:'τουρκικό'},
+  {flag:'🇳🇴',en:'Norway',          country:'Νορβηγία',          masc:'Νορβηγός',         fem:'Νορβηγίδα',            lang:'νορβηγικά',                       adj:'νορβηγικό'},
+  {flag:'🇦🇹',en:'Austria',         country:'Αυστρία',           masc:'Αυστριακός',       fem:'Αυστριακή',            lang:'γερμανικά',                       adj:'αυστριακό'},
+  {flag:'🇨🇾',en:'Cyprus',          country:'Κύπρος',            masc:'Κύπριος',          fem:'Κυπρία',               lang:'ελληνικά',                        adj:'κυπριακό'},
+  {flag:'🇺🇦',en:'Ukraine',         country:'Ουκρανία',          masc:'Ουκρανός',         fem:'Ουκρανή',              lang:'ουκρανικά',                       adj:'ουκρανικό'},
+  {flag:'🇨🇭',en:'Switzerland',     country:'Ελβετία',           masc:'Ελβετός',          fem:'Ελβετίδα',             lang:'γερμανικά / γαλλικά / ιταλικά',   adj:'ελβετικό'},
+  {flag:'🇧🇪',en:'Belgium',         country:'Βέλγιο',            masc:'Βέλγος',           fem:'Βελγίδα',              lang:'γαλλικά / ολλανδικά',             adj:'βελγικό'},
+  {flag:'🇨🇿',en:'Czech Republic',  country:'Τσεχία',            masc:'Τσέχος',           fem:'Τσέχα',                lang:'τσέχικα',                         adj:'τσέχικο'},
+  {flag:'🇭🇺',en:'Hungary',         country:'Ουγγαρία',          masc:'Ούγγρος',          fem:'Ουγγαρίδα',            lang:'ουγγρικά',                        adj:'ουγγρικό'},
+  {flag:'🇭🇷',en:'Croatia',         country:'Κροατία',           masc:'Κροάτης',          fem:'Κροάτισσα',            lang:'κροατικά',                        adj:'κροατικό'},
+  {flag:'🇩🇰',en:'Denmark',         country:'Δανία',             masc:'Δανός',            fem:'Δανή',                 lang:'δανικά',                          adj:'δανικό'},
+  {flag:'🇫🇮',en:'Finland',         country:'Φινλανδία',         masc:'Φινλανδός',        fem:'Φινλανδή',             lang:'φινλανδικά',                      adj:'φινλανδικό'},
+  {flag:'🇷🇸',en:'Serbia',          country:'Σερβία',            masc:'Σέρβος',           fem:'Σέρβα',                lang:'σερβικά',                         adj:'σερβικό'},
+  {flag:'🇸🇰',en:'Slovakia',        country:'Σλοβακία',          masc:'Σλοβάκος',         fem:'Σλοβάκα',              lang:'σλοβακικά',                       adj:'σλοβακικό'},
+  {flag:'🇸🇮',en:'Slovenia',        country:'Σλοβενία',          masc:'Σλοβένος',         fem:'Σλοβένα',              lang:'σλοβενικά',                       adj:'σλοβενικό'},
+  {flag:'🇮🇪',en:'Ireland',         country:'Ιρλανδία',          masc:'Ιρλανδός',         fem:'Ιρλανδή',              lang:'αγγλικά / ιρλανδικά',             adj:'ιρλανδικό'},
+  {flag:'🇧🇬',en:'Bulgaria',        country:'Βουλγαρία',         masc:'Βούλγαρος',        fem:'Βουλγάρα',             lang:'βουλγαρικά',                      adj:'βουλγαρικό'},
+  {flag:'🇦🇱',en:'Albania',         country:'Αλβανία',           masc:'Αλβανός',          fem:'Αλβανίδα',             lang:'αλβανικά',                        adj:'αλβανικό'},
+  {flag:'🇲🇰',en:'North Macedonia', country:'Βόρεια Μακεδονία',  masc:'Μακεδόνας',        fem:'Μακεδόνισσα',          lang:'μακεδονικά',                      adj:'μακεδονικό'},
+  {flag:'🇱🇻',en:'Latvia',          country:'Λεττονία',          masc:'Λεττονός',         fem:'Λεττονή',              lang:'λεττονικά',                       adj:'λεττονικό'},
+  {flag:'🇪🇪',en:'Estonia',         country:'Εσθονία',           masc:'Εσθονός',          fem:'Εσθονή',               lang:'εσθονικά',                        adj:'εσθονικό'},
+  // Americas
+  {flag:'🇧🇷',en:'Brazil',          country:'Βραζιλία',          masc:'Βραζιλιάνος',      fem:'Βραζιλιάνα',           lang:'πορτογαλικά',                     adj:'βραζιλιάνικο'},
+  {flag:'🇦🇷',en:'Argentina',       country:'Αργεντινή',         masc:'Αργεντινός',       fem:'Αργεντινή',            lang:'ισπανικά',                        adj:'αργεντίνικο'},
+  {flag:'🇨🇦',en:'Canada',          country:'Καναδάς',           masc:'Καναδός',          fem:'Καναδή',               lang:'αγγλικά / γαλλικά',               adj:'καναδικό'},
+  {flag:'🇨🇴',en:'Colombia',        country:'Κολομβία',          masc:'Κολομβιανός',      fem:'Κολομβιανή',           lang:'ισπανικά',                        adj:'κολομβιανό'},
+  {flag:'🇵🇪',en:'Peru',            country:'Περού',             masc:'Περουβιανός',      fem:'Περουβιανή',           lang:'ισπανικά',                        adj:'περουβιανό'},
+  {flag:'🇨🇱',en:'Chile',           country:'Χιλή',              masc:'Χιλιανός',         fem:'Χιλιανή',              lang:'ισπανικά',                        adj:'χιλιανό'},
+  // Asia & Oceania
+  {flag:'🇮🇳',en:'India',           country:'Ινδία',             masc:'Ινδός',            fem:'Ινδή',                 lang:'χίντι / αγγλικά',                 adj:'ινδικό'},
+  {flag:'🇰🇷',en:'Korea',           country:'Κορέα',             masc:'Κορεάτης',         fem:'Κορεάτισσα',           lang:'κορεατικά',                       adj:'κορεατικό'},
+  {flag:'🇦🇺',en:'Australia',       country:'Αυστραλία',         masc:'Αυστραλός',        fem:'Αυστραλή',             lang:'αγγλικά',                         adj:'αυστραλιανό'},
+  {flag:'🇳🇿',en:'New Zealand',     country:'Νέα Ζηλανδία',      masc:'Νεοζηλανδός',      fem:'Νεοζηλανδή',           lang:'αγγλικά',                         adj:'νεοζηλανδικό'},
+  {flag:'🇹🇭',en:'Thailand',        country:'Ταϊλάνδη',          masc:'Ταϊλανδός',        fem:'Ταϊλανδή',             lang:'ταϊλανδέζικα',                    adj:'ταϊλανδέζικο'},
+  {flag:'🇻🇳',en:'Vietnam',         country:'Βιετνάμ',           masc:'Βιετναμέζος',      fem:'Βιετναμέζα',           lang:'βιετναμέζικα',                    adj:'βιετναμέζικο'},
+  {flag:'🇮🇩',en:'Indonesia',       country:'Ινδονησία',         masc:'Ινδονήσιος',       fem:'Ινδονήσια',            lang:'ινδονησιακά',                     adj:'ινδονησιακό'},
+  // Africa & Middle East
+  {flag:'🇪🇬',en:'Egypt',           country:'Αίγυπτος',          masc:'Αιγύπτιος',        fem:'Αιγύπτια',             lang:'αραβικά',                         adj:'αιγυπτιακό'},
+  {flag:'🇸🇦',en:'Saudi Arabia',    country:'Σαουδική Αραβία',   masc:'Σαουδάραβας',      fem:'Σαουδαραβίτισσα',      lang:'αραβικά',                         adj:'σαουδαραβικό'},
+  {flag:'🇲🇦',en:'Morocco',         country:'Μαρόκο',            masc:'Μαροκινός',        fem:'Μαροκινή',             lang:'αραβικά / γαλλικά',               adj:'μαροκινό'},
+  {flag:'🇮🇱',en:'Israel',          country:'Ισραήλ',            masc:'Ισραηλινός',       fem:'Ισραηλινή',            lang:'εβραϊκά',                         adj:'ισραηλινό'},
+  {flag:'🇿🇦',en:'South Africa',    country:'Νότια Αφρική',      masc:'Νοτιοαφρικανός',   fem:'Νοτιοαφρικανή',        lang:'αγγλικά / αφρικάανς',             adj:'νοτιοαφρικανικό'},
+  {flag:'🇳🇬',en:'Nigeria',         country:'Νιγηρία',           masc:'Νιγηριανός',       fem:'Νιγηριανή',            lang:'αγγλικά',                         adj:'νιγηριανό'},
+  {flag:'🇰🇪',en:'Kenya',           country:'Κένυα',             masc:'Κενυάτης',         fem:'Κενυάτισσα',           lang:'σουαχίλι / αγγλικά',              adj:'κενυατικό'},
+];
+
+// ─────────────────────────────────────────────────────────
+// VOCAB SUB-TYPES for mixed quiz
+// ─────────────────────────────────────────────────────────
+const VTYPES = [
+  {
+    badge:'MALE FORM',
+    hint: d=>'What is the male nationality for '+d.flag+' '+d.en+'?',
+    main: d=>d.country.split(' / ')[0], sub: d=>'',
+    answer: d=>d.masc.split(' / ')[0],
+    pool: ()=>DATA.map(d=>d.masc.split(' / ')[0]),
+    fb: d=>d.flag+' '+d.en+' → άνδρας: <strong>'+d.masc+'</strong>',
+  },
+  {
+    badge:'FEMALE FORM',
+    hint: d=>'What is the female nationality for '+d.flag+' '+d.en+'?',
+    main: d=>d.country.split(' / ')[0], sub: d=>'',
+    answer: d=>d.fem.split(' / ')[0],
+    pool: ()=>DATA.map(d=>d.fem.split(' / ')[0]),
+    fb: d=>d.flag+' '+d.en+' → γυναίκα: <strong>'+d.fem+'</strong>',
+  },
+  {
+    badge:'LANGUAGE',
+    hint: d=>'What language do they speak in '+d.flag+' '+d.en+'?',
+    main: d=>d.country.split(' / ')[0], sub: d=>'',
+    answer: d=>d.lang.split(' / ')[0],
+    pool: ()=>[...new Set(DATA.map(d=>d.lang.split(' / ')[0]))],
+    fb: d=>d.flag+' '+d.en+' → μιλάνε: <strong>'+d.lang+'</strong>',
+  },
+  {
+    badge:'FOOD ADJECTIVE',
+    hint: d=>'How do you say "'+d.en+' food" in Greek?',
+    main: d=>d.country.split(' / ')[0], sub: d=>'___ φαγητό',
+    answer: d=>d.adj,
+    pool: ()=>DATA.map(d=>d.adj),
+    fb: d=>d.flag+' '+d.en+' → <strong>'+d.adj+'</strong> φαγητό',
+  },
+];
+
+// ─────────────────────────────────────────────────────────
+// SENTENCES — 50 A1 fill-in-the-blank
+// ─────────────────────────────────────────────────────────
+const SENTENCES = [
+  // Original lesson countries
+  {gr:'Ο Γιώργης είναι ___ .',            en:'Giorgis is Greek (m).',              answer:'Έλληνας',          d:['Γερμανός','Ιταλός','Ισπανός']},
+  {gr:'Η Μαρία είναι ___ .',               en:'Maria is Greek (f).',                answer:'Ελληνίδα',         d:['Γερμανίδα','Ιταλίδα','Γαλλίδα']},
+  {gr:'Μιλάω ___ πολύ καλά.',             en:'I speak Greek very well.',            answer:'ελληνικά',         d:['ιταλικά','αγγλικά','γαλλικά']},
+  {gr:'Η πίτσα είναι ___ φαγητό.',        en:'Pizza is Italian food.',             answer:'ιταλικό',           d:['γαλλικό','ελληνικό','ισπανικό']},
+  {gr:'Ο Μάρκο είναι ___ .',              en:'Marco is Italian (m).',              answer:'Ιταλός',            d:['Ισπανός','Γάλλος','Γερμανός']},
+  {gr:'Η Σόφι είναι ___ .',               en:'Sophie is French (f).',              answer:'Γαλλίδα',           d:['Ιταλίδα','Ισπανίδα','Γερμανίδα']},
+  {gr:'Η παέγια είναι ___ φαγητό.',       en:'Paella is Spanish food.',            answer:'ισπανικό',          d:['ιταλικό','γαλλικό','πορτογαλικό']},
+  {gr:'Ο Χανς είναι ___ .',               en:'Hans is German (m).',                answer:'Γερμανός',          d:['Αυστριακός','Ολλανδός','Σουηδός']},
+  {gr:'Στη Βρετανία μιλάνε ___ .',        en:'In Britain they speak English.',     answer:'αγγλικά',           d:['γαλλικά','ισπανικά','γερμανικά']},
+  {gr:'Το σούσι είναι ___ φαγητό.',       en:'Sushi is Japanese food.',            answer:'ιαπωνικό',          d:['κινεζικό','κορεατικό','ινδικό']},
+  {gr:'Η Άνα είναι από την ___ .',        en:'Ana is from Spain.',                 answer:'Ισπανία',           d:['Ιταλία','Πορτογαλία','Γαλλία']},
+  {gr:'Ο Βλάντιμιρ είναι ___ .',          en:'Vladimir is Russian (m).',           answer:'Ρώσος',             d:['Ουκρανός','Πολωνός','Γερμανός']},
+  {gr:'Μιλάω ___ και αγγλικά.',           en:'I speak Portuguese and English.',    answer:'πορτογαλικά',       d:['ισπανικά','ιταλικά','γαλλικά']},
+  {gr:'Ο μουσακάς είναι ___ φαγητό.',     en:'Moussaka is Greek food.',            answer:'ελληνικό',          d:['τουρκικό','αιγυπτιακό','κυπριακό']},
+  {gr:'Η Σάρα είναι από τη ___ .',        en:'Sara is from Brazil.',               answer:'Βραζιλία',          d:['Αργεντινή','Μεξικό','Ισπανία']},
+  {gr:'Στην Αίγυπτο μιλάνε ___ .',       en:'In Egypt they speak Arabic.',        answer:'αραβικά',           d:['τουρκικά','ελληνικά','κινέζικα']},
+  {gr:'Η Γκρέτα είναι ___ .',             en:'Greta is Swedish (f).',              answer:'Σουηδίδα',          d:['Νορβηγίδα','Γερμανίδα','Ολλανδίδα']},
+  {gr:'Ο Νίκος είναι από την ___ .',      en:'Nikos is from Cyprus.',              answer:'Κύπρος',            d:['Ελλάδα','Τουρκία','Λιθουανία']},
+  {gr:'Το κιμτσί είναι ___ φαγητό.',      en:'Kimchi is Korean food.',             answer:'κορεατικό',         d:['κινεζικό','ιαπωνικό','ινδικό']},
+  {gr:'Η Ολγκά είναι ___ .',              en:'Olga is Ukrainian (f).',             answer:'Ουκρανή',           d:['Ρωσίδα','Πολωνίδα','Λιθουανή']},
+  {gr:'Ο Χουάν είναι ___ .',              en:'Juan is Argentine (m).',             answer:'Αργεντινός',        d:['Μεξικανός','Ισπανός','Βραζιλιάνος']},
+  {gr:'Η Άνγκελα είναι ___ .',            en:'Angela is German (f).',              answer:'Γερμανίδα',         d:['Αυστριακή','Σουηδίδα','Ολλανδίδα']},
+  {gr:'Το σνίτσελ είναι ___ φαγητό.',     en:'Schnitzel is Austrian food.',        answer:'αυστριακό',         d:['γερμανικό','ελβετικό','πολωνικό']},
+  {gr:'Μιλάω ___ λίγο.',                  en:'I speak Turkish a little.',          answer:'τουρκικά',          d:['αραβικά','ρωσικά','πολωνικά']},
+  {gr:'Ο Τζακ είναι ___ .',               en:'Jack is Australian (m).',            answer:'Αυστραλός',         d:['Βρετανός','Αμερικάνος','Νεοζηλανδός']},
+  {gr:'Η Πρίγια είναι ___ .',             en:'Priya is Indian (f).',               answer:'Ινδή',              d:['Αιγύπτια','Κορεάτισσα','Ιαπωνίδα']},
+  {gr:'Στην Πολωνία μιλάνε ___ .',        en:'In Poland they speak Polish.',       answer:'πολωνικά',          d:['ρωσικά','ουκρανικά','γερμανικά']},
+  {gr:'Η Κάθριν είναι ___ .',             en:'Catherine is British (f).',          answer:'Βρετανίδα',         d:['Αυστραλή','Αμερικανίδα','Ιρλανδή']},
+  {gr:'Ο Πατρίκ είναι από την ___ .',     en:'Patrick is from Ireland.',           answer:'Ιρλανδία',          d:['Βρετανία','Σκωτία','Γαλλία']},
+  {gr:'Η Ίνγκριντ είναι ___ .',           en:'Ingrid is Norwegian (f).',           answer:'Νορβηγίδα',         d:['Σουηδίδα','Δανή','Φινλανδή']},
+  {gr:'Ο Μάτεους είναι από το ___ .',     en:'Mateus is from Belgium.',            answer:'Βέλγιο',            d:['Ολλανδία','Γαλλία','Γερμανία']},
+  {gr:'Η Λένα είναι ___ .',               en:'Lena is Danish (f).',                answer:'Δανή',              d:['Νορβηγίδα','Σουηδίδα','Φινλανδή']},
+  {gr:'Το ταζίν είναι ___ φαγητό.',       en:'Tagine is Moroccan food.',           answer:'μαροκινό',          d:['αιγυπτιακό','τουρκικό','ισραηλινό']},
+  {gr:'Ο Ίβαν είναι ___ .',               en:'Ivan is Serbian (m).',               answer:'Σέρβος',            d:['Κροάτης','Σλοβάκος','Ούγγρος']},
+  {gr:'Στο Ισραήλ μιλάνε ___ .',         en:'In Israel they speak Hebrew.',       answer:'εβραϊκά',           d:['αραβικά','τουρκικά','ελληνικά']},
+  {gr:'Η Ζόσια είναι ___ .',              en:'Zosia is Polish (f).',               answer:'Πολωνίδα',          d:['Τσέχα','Ουκρανή','Ρωσίδα']},
+  {gr:'Ο Πέπε είναι από το ___ .',        en:'Pepe is from Peru.',                 answer:'Περού',             d:['Μεξικό','Βραζιλία','Αργεντινή']},
+  {gr:'Η Αμελί είναι ___ .',              en:'Amélie is French (f).',              answer:'Γαλλίδα',           d:['Βελγίδα','Ισπανίδα','Ιταλίδα']},
+  {gr:'Στη Φινλανδία μιλάνε ___ .',      en:'In Finland they speak Finnish.',     answer:'φινλανδικά',        d:['σουηδικά','νορβηγικά','δανικά']},
+  // New sentences for new countries
+  {gr:'Η Μαρία είναι από τη ___ .',       en:'Maria is from Colombia.',            answer:'Κολομβία',          d:['Βενεζουέλα','Περού','Βραζιλία']},
+  {gr:'Ο Λούκας είναι ___ .',             en:'Lukas is Czech (m).',                answer:'Τσέχος',            d:['Σλοβάκος','Πολωνός','Ούγγρος']},
+  {gr:'Το φο είναι ___ φαγητό.',          en:'Pho is Vietnamese food.',            answer:'βιετναμέζικο',      d:['ταϊλανδέζικο','κινεζικό','ιαπωνικό']},
+  {gr:'Η Τούι είναι από τη ___ .',        en:'Tui is from New Zealand.',           answer:'Νέα Ζηλανδία',      d:['Αυστραλία','Φίτζι','Χαβάη']},
+  {gr:'Στη Βουλγαρία μιλάνε ___ .',      en:'In Bulgaria they speak Bulgarian.',  answer:'βουλγαρικά',        d:['σερβικά','ρουμάνικα','ουκρανικά']},
+  {gr:'Ο Αχμέντ είναι ___ .',             en:'Ahmed is Egyptian (m).',             answer:'Αιγύπτιος',         d:['Μαροκινός','Λίβυος','Σύριος']},
+  {gr:'Το σατέ είναι ___ φαγητό.',        en:'Satay is Indonesian food.',          answer:'ινδονησιακό',       d:['ταϊλανδέζικο','βιετναμέζικο','ινδικό']},
+  {gr:'Η Ελένη είναι από την ___ .',      en:'Eleni is from Albania.',             answer:'Αλβανία',           d:['Ελλάδα','Βουλγαρία','Κροατία']},
+  {gr:'Ο Πάολο είναι από τη ___ .',       en:'Paolo is from Chile.',               answer:'Χιλή',              d:['Αργεντινή','Περού','Βολιβία']},
+  {gr:'Στον Καναδά μιλάνε ___ και γαλλικά.', en:'In Canada they speak English and French.', answer:'αγγλικά', d:['ισπανικά','πορτογαλικά','ολλανδικά']},
+  {gr:'Η Σίντι είναι ___ .',              en:'Cindy is from South Africa (f).',    answer:'Νοτιοαφρικανή',     d:['Νιγηριανή','Κενυάτισσα','Αιγύπτια']},
+];
+
+// ─────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────
+let curMode='country';
+let cq=[],ci=0,cc=0,cw=0,cs=0,cm=[],cans=false;
+let vq=[],vi=0,vc=0,vw=0,vs=0,vm=[],vans=false;
+let fq=[],fi=0,fc=0,fw=0,fs=0,fm=[],fans=false;
+
+function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
+function setScores(a,b,c){document.getElementById('sc').textContent=a;document.getElementById('sw').textContent=b;document.getElementById('ss').textContent=c;}
+function sched(item,q,i){
+  q.splice(i+1,0,{...item,_retry:'immediate'});
+  const d=Math.min(3+Math.floor(Math.random()*3),q.length-i-1);
+  q.splice(i+2+d,0,{...item,_retry:'delayed'});
+}
+function failRetry(item,q,i,retry){
+  if(!retry){sched(item,q,i);}
+  else if(retry==='immediate'){q.splice(i+1,0,{...item,_retry:'immediate'});q.splice(Math.min(i+4,q.length),0,{...item,_retry:'delayed'});}
+  else{q.splice(i+1,0,{...item,_retry:'immediate'});}
+}
+
+// ─────────────────────────────────────────────────────────
+// SWITCH MODE
+// ─────────────────────────────────────────────────────────
+function switchMode(m){
+  ['country','vocab','fill','ref'].forEach(id=>{
+    document.getElementById('tab-'+id).classList.remove('active');
+    document.getElementById(id+'-view').style.display='none';
+  });
+  document.getElementById('finish-view').style.display='none';
+  document.getElementById('score-bar').style.display='flex';
+  curMode=m;
+  if(m==='ref'){
+    document.getElementById('tab-ref').classList.add('active');
+    document.getElementById('score-bar').style.display='none';
+    buildRef();
+    document.getElementById('ref-view').style.display='block';
+    return;
+  }
+  document.getElementById('tab-'+m).classList.add('active');
+  document.getElementById(m+'-view').style.display='block';
+  if(m==='country') startCountry();
+  else if(m==='vocab') startVocab();
+  else if(m==='fill') startFill();
+}
+function backFromRef(){
+  document.getElementById('ref-view').style.display='none';
+  document.getElementById('score-bar').style.display='flex';
+  document.getElementById('tab-ref').classList.remove('active');
+  switchMode(curMode==='ref'?'country':curMode);
+}
+function restartCurrent(){document.getElementById('finish-view').style.display='none';switchMode(curMode);}
+
+// ─────────────────────────────────────────────────────────
+// FINISH
+// ─────────────────────────────────────────────────────────
+function showFinish(c,w,mistakes,type){
+  ['country-view','vocab-view','fill-view'].forEach(id=>document.getElementById(id).style.display='none');
+  const tot=c+w,pct=tot?Math.round(c/tot*100):0;
+  document.getElementById('fin-msg').textContent=pct>=90?'Excellent! 🎉':pct>=70?'Good progress! 👍':'Keep going! 📚';
+  document.getElementById('fin-score').textContent=c+' correct out of '+tot+' ('+pct+'%)';
+  const mm=document.getElementById('fin-mistakes');mm.innerHTML='';
+  if(mistakes.length){
+    const hdr=document.createElement('p');hdr.style.cssText='font-size:13px;color:var(--muted);margin-bottom:8px';
+    hdr.textContent=type==='fill'?'Sentences to review:':'Items to review:';mm.appendChild(hdr);
+    const seen=new Set();
+    mistakes.forEach(m=>{
+      const key=type==='fill'?m.gr:(m.country||m.en);
+      if(!seen.has(key)){seen.add(key);
+        const d=document.createElement('div');d.className='mistake-item';
+        if(type==='fill') d.innerHTML=m.gr.replace('___','<strong>'+m.answer+'</strong>')+'<br><em style="font-size:12px">'+m.en+'</em>';
+        else if(type==='country') d.innerHTML=m.flag+' <strong>'+m.en+'</strong> → '+m.country;
+        else d.innerHTML=m.flag+' <strong>'+m.en+'</strong> · '+m.masc+' / '+m.fem+' · '+m.lang+' · '+m.adj;
+        mm.appendChild(d);
+      }
+    });
+  } else {mm.innerHTML='<p style="color:#3B6D11;font-size:14px">Perfect — no mistakes!</p>';}
+  document.getElementById('finish-view').style.display='block';
+}
+
+// ─────────────────────────────────────────────────────────
+// COUNTRY QUIZ
+// ─────────────────────────────────────────────────────────
+function startCountry(){
+  cq=shuf([...DATA]);ci=0;cc=0;cw=0;cs=0;cm=[];setScores(0,0,0);
+  document.getElementById('finish-view').style.display='none';
+  document.getElementById('country-view').style.display='block';
+  showCountry();
+}
+function showCountry(){
+  cans=false;
+  const item=cq[ci],r=item._retry||null;
+  document.getElementById('cretry').style.display=r==='immediate'?'block':'none';
+  document.getElementById('clater').style.display=r==='delayed'?'block':'none';
+  document.getElementById('cfb').style.display='none';
+  document.getElementById('cnb').style.display='none';
+  document.getElementById('cprog').textContent='Question '+(ci+1)+' of '+cq.length;
+  document.getElementById('cenglish').textContent=item.flag+'  '+item.en;
+  const correct=item.country.split(' / ')[0];
+  const pool=shuf(DATA.filter(d=>d.country!==item.country)).slice(0,3).map(d=>d.country.split(' / ')[0]);
+  buildChoices('cchoices',shuf([correct,...pool]),correct,(c)=>pickCountry(c,correct,item));
+}
+function pickCountry(chosen,correct,item){
+  if(cans)return;cans=true;
+  const ok=chosen===correct;
+  highlight('cchoices',chosen,correct,ok);
+  const fb=document.getElementById('cfb');fb.style.display='block';
+  if(ok){cc++;cs++;fb.className='feedback correct';fb.innerHTML='✓ Correct! '+item.flag+' <strong>'+item.en+'</strong> = '+item.country;}
+  else{cw++;cs=0;fb.className='feedback wrong';fb.innerHTML='✗ '+item.flag+' <strong>'+item.en+'</strong> = <strong>'+item.country+'</strong>';cm.push(item);failRetry(item,cq,ci,item._retry);}
+  setScores(cc,cw,cs);
+  document.getElementById('cnb').style.display='block';
+  document.getElementById('cnb').textContent=ok?'Next →':'Try again →';
+}
+function nextCountry(){ci++;if(ci>=cq.length)showFinish(cc,cw,cm,'country');else showCountry();}
+
+// ─────────────────────────────────────────────────────────
+// VOCAB QUIZ (mixed: masc / fem / lang / adj)
+// Each DATA entry appears once per type = 4× total, shuffled together
+// ─────────────────────────────────────────────────────────
+function startVocab(){
+  const items=[];
+  DATA.forEach(d=>VTYPES.forEach((t,ti)=>items.push({...d,_vtype:ti})));
+  vq=shuf(items);vi=0;vc=0;vw=0;vs=0;vm=[];vans=false;setScores(0,0,0);
+  document.getElementById('finish-view').style.display='none';
+  document.getElementById('vocab-view').style.display='block';
+  showVocab();
+}
+function showVocab(){
+  vans=false;
+  const item=vq[vi],r=item._retry||null;
+  const t=VTYPES[item._vtype];
+  document.getElementById('vretry').style.display=r==='immediate'?'block':'none';
+  document.getElementById('vlater').style.display=r==='delayed'?'block':'none';
+  document.getElementById('vfb').style.display='none';
+  document.getElementById('vnb').style.display='none';
+  document.getElementById('vprog').textContent='Question '+(vi+1)+' of '+vq.length;
+  document.getElementById('vbadge').textContent=t.badge;
+  document.getElementById('venglish').textContent='';
+  document.getElementById('vmain').textContent=t.main(item);
+  document.getElementById('vhint').textContent=t.hint(item);
+  document.getElementById('vsub').textContent=t.sub(item);
+  const correct=t.answer(item);
+  const pool=shuf([...new Set(t.pool().filter(a=>a!==correct))]).slice(0,3);
+  buildChoices('vchoices',shuf([correct,...pool]),correct,(c)=>pickVocab(c,correct,item,t));
+}
+function pickVocab(chosen,correct,item,t){
+  if(vans)return;vans=true;
+  const ok=chosen===correct;
+  highlight('vchoices',chosen,correct,ok);
+  const fb=document.getElementById('vfb');fb.style.display='block';
+  if(ok){vc++;vs++;fb.className='feedback correct';fb.innerHTML='✓ Correct! '+t.fb(item);}
+  else{vw++;vs=0;fb.className='feedback wrong';fb.innerHTML='✗ '+t.fb(item);vm.push(item);failRetry(item,vq,vi,item._retry);}
+  setScores(vc,vw,vs);
+  document.getElementById('vnb').style.display='block';
+  document.getElementById('vnb').textContent=ok?'Next →':'Try again →';
+}
+function nextVocab(){vi++;if(vi>=vq.length)showFinish(vc,vw,vm,'vocab');else showVocab();}
+
+// ─────────────────────────────────────────────────────────
+// SENTENCE FILL
+// ─────────────────────────────────────────────────────────
+function startFill(){
+  fq=shuf([...SENTENCES]);fi=0;fc=0;fw=0;fs=0;fm=[];fans=false;setScores(0,0,0);
+  document.getElementById('finish-view').style.display='none';
+  document.getElementById('fill-view').style.display='block';
+  showFill();
+}
+function showFill(){
+  fans=false;
+  const s=fq[fi],r=s._retry||null;
+  document.getElementById('sretry').style.display=r==='immediate'?'block':'none';
+  document.getElementById('slater').style.display=r==='delayed'?'block':'none';
+  document.getElementById('ffb').style.display='none';
+  document.getElementById('fnb').style.display='none';
+  document.getElementById('fprog').textContent='Question '+(fi+1)+' of '+fq.length;
+  const parts=s.gr.split('___');
+  const el=document.getElementById('stext');el.innerHTML='';
+  el.appendChild(document.createTextNode(parts[0]));
+  const b=document.createElement('span');b.className='blank';b.textContent='?';el.appendChild(b);
+  el.appendChild(document.createTextNode(parts[1]||''));
+  document.getElementById('stransl').textContent=s.en;
+  buildChoices('fchoices',shuf([s.answer,...s.d]),s.answer,(c)=>pickFill(c,s));
+}
+function pickFill(chosen,s){
+  if(fans)return;fans=true;
+  const ok=chosen===s.answer;
+  const b=document.querySelector('.blank');b.textContent=chosen;b.style.color=ok?'#3B6D11':'#A32D2D';
+  highlight('fchoices',chosen,s.answer,ok);
+  const ffb=document.getElementById('ffb');ffb.style.display='block';
+  if(ok){fc++;fs++;ffb.className='feedback correct';ffb.innerHTML='✓ Correct! <strong>'+s.gr.replace('___',s.answer)+'</strong>';}
+  else{fw++;fs=0;ffb.className='feedback wrong';ffb.innerHTML='✗ The answer is <strong>'+s.answer+'</strong> → '+s.gr.replace('___',s.answer);fm.push(s);failRetry(s,fq,fi,s._retry);}
+  setScores(fc,fw,fs);
+  document.getElementById('fnb').style.display='block';
+  document.getElementById('fnb').textContent=ok?'Next →':'Try again →';
+}
+function nextFill(){fi++;if(fi>=fq.length)showFinish(fc,fw,fm,'fill');else showFill();}
+
+// ─────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────
+function buildChoices(cid,opts,correct,cb){
+  const el=document.getElementById(cid);el.innerHTML='';
+  opts.forEach(opt=>{const b=document.createElement('button');b.className='choice-btn';b.textContent=opt;b.onclick=()=>cb(opt);el.appendChild(b);});
+}
+function highlight(cid,chosen,correct,ok){
+  document.querySelectorAll('#'+cid+' .choice-btn').forEach(b=>{
+    b.disabled=true;
+    if(b.textContent===correct)b.classList.add(ok?'correct':'reveal');
+    else if(b.textContent===chosen&&!ok)b.classList.add('wrong');
+  });
+}
+function buildRef(){
+  const tbody=document.getElementById('ref-body');tbody.innerHTML='';
+  DATA.forEach(d=>{const tr=document.createElement('tr');tr.innerHTML='<td>'+d.flag+' '+d.en+'</td><td>'+d.country+'</td><td>'+d.masc+'</td><td>'+d.fem+'</td><td>'+d.lang+'</td><td>'+d.adj+'</td>';tbody.appendChild(tr);});
+}
+
+switchMode('country');
+</script>
+</body>
+</html>

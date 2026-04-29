@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greek: Από / Σε / Possessives</title>
+<style>
+  :root{
+    --bg:#deeef8;--surface:#fff;--surface2:#edf5fc;
+    --ink:#0e1621;--blue:#1b3f72;--mid:#3468a8;--sky:#6aaad4;
+    --fog:#c8dff0;--muted:#5a7a96;
+    --border:rgba(100,160,210,0.25);--border2:rgba(100,160,210,0.4);
+    --r:14px;
+  }
+  @media(prefers-color-scheme:dark){:root{
+    --bg:#0e1a26;--surface:#162030;--surface2:#1e2e40;
+    --ink:#e8f2fa;--muted:#7aaac8;
+    --border:rgba(100,160,210,0.15);--border2:rgba(100,160,210,0.3);
+  }}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+
+  nav{background:var(--blue);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;}
+  .nav-title{font-size:1rem;font-weight:700;letter-spacing:.06em;color:#fff;text-transform:uppercase;}
+  .nav-title span{color:var(--fog);font-weight:300;}
+
+  .tabs{display:flex;gap:5px;padding:1.1rem 1.5rem .5rem;max-width:760px;margin:0 auto;flex-wrap:wrap;}
+  .tab{flex:1;min-width:80px;padding:.5rem .3rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--muted);font-size:11px;font-weight:500;cursor:pointer;text-align:center;transition:all .15s;line-height:1.3;}
+  .tab.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+
+  .score-bar{display:flex;gap:10px;padding:0 1.5rem 1rem;max-width:760px;margin:0 auto;}
+  .score-card{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.6rem;text-align:center;}
+  .score-label{font-size:11px;color:var(--muted);margin-bottom:2px;}
+  .score-val{font-size:20px;font-weight:700;}
+
+  .wrap{max-width:760px;margin:0 auto;padding:0 1.5rem 4rem;}
+
+  .rule-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.875rem 1.1rem;margin-bottom:1rem;font-size:13px;color:var(--muted);line-height:1.8;}
+  .rule-box strong{color:var(--ink);font-weight:600;}
+  .rule-box .formula{font-family:monospace;font-size:13px;background:var(--surface2);padding:2px 8px;border-radius:6px;color:var(--mid);}
+
+  .progress{font-size:12px;color:var(--muted);text-align:center;margin-bottom:.5rem;}
+
+  .sentence-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.75rem 1.5rem;margin-bottom:1rem;position:relative;}
+  .sentence-badge{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--surface);background:var(--mid);padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:.75rem;}
+  .sentence-text{font-size:1.35rem;color:var(--ink);line-height:2.2;text-align:center;margin-bottom:.4rem;}
+  .blank{display:inline-block;min-width:120px;border-bottom:2.5px solid var(--mid);color:var(--mid);font-weight:700;padding:0 6px;vertical-align:bottom;text-align:center;}
+  .sentence-translation{font-size:13px;color:var(--muted);font-style:italic;text-align:center;line-height:1.6;}
+  .sentence-hint{font-size:12px;color:var(--sky);text-align:center;margin-top:.4rem;}
+
+  .retry-badge{position:absolute;top:10px;right:12px;background:#fef3e2;color:#854F0B;font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;}
+  .later-badge{position:absolute;top:10px;left:12px;background:#e8f0fb;color:#1a4a8a;font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;}
+
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem;}
+  .choice-btn{padding:.7rem .5rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--ink);font-size:15px;cursor:pointer;font-family:inherit;text-align:center;line-height:1.35;transition:background .12s;}
+  .choice-btn:hover:not(:disabled){background:var(--surface2);}
+  .choice-btn.correct{background:#EAF3DE;border-color:#639922;color:#3B6D11;}
+  .choice-btn.wrong{background:#FCEBEB;border-color:#E24B4A;color:#A32D2D;}
+  .choice-btn.reveal{background:#EAF3DE;border-color:#639922;color:#3B6D11;}
+
+  .feedback{border-radius:var(--r);padding:.875rem 1rem;margin-bottom:1rem;font-size:14px;line-height:1.65;}
+  .feedback.correct{background:#EAF3DE;color:#3B6D11;border:1px solid #639922;}
+  .feedback.wrong{background:#FCEBEB;color:#A32D2D;border:1px solid #E24B4A;}
+
+  .next-btn{width:100%;padding:.75rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface2);color:var(--ink);font-size:15px;cursor:pointer;font-family:inherit;}
+  .next-btn:hover{background:var(--surface);}
+
+  /* Reference */
+  .ref-section-title{font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--mid);margin:1.25rem 0 .6rem;}
+  .ref-table-wrap{overflow-x:auto;margin-bottom:1.25rem;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  thead tr{background:var(--blue);color:#fff;}
+  thead th{padding:.55rem .75rem;text-align:left;font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;}
+  tbody tr:nth-child(even){background:var(--surface2);}
+  tbody tr:nth-child(odd){background:var(--surface);}
+  tbody td{padding:.5rem .75rem;border-bottom:1px solid var(--border);font-size:13px;}
+  tbody td:first-child{font-weight:600;color:var(--blue);}
+
+  .ex-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:1rem;font-size:14px;line-height:1.9;}
+  .ex-box .gr{font-weight:600;color:var(--ink);}
+  .ex-box .en{color:var(--muted);font-style:italic;font-size:13px;margin-left:.5rem;}
+  .ref-back-btn{width:100%;padding:.75rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--ink);font-size:14px;cursor:pointer;font-family:inherit;margin-top:1rem;}
+
+  .finish-screen{text-align:center;padding:2rem 1rem;}
+  .finish-screen h2{font-size:22px;font-weight:700;margin-bottom:.4rem;}
+  .mistake-item{background:#FCEBEB;border-radius:var(--r);padding:.65rem 1rem;margin-bottom:.4rem;font-size:14px;color:#A32D2D;text-align:left;line-height:1.5;}
+  .restart-btn{margin-top:1.25rem;padding:.75rem 2rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--ink);font-size:15px;cursor:pointer;font-family:inherit;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-title">Greek <span>Prepositions & Possessives</span></div>
+  <div style="font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:.1em">Από πού; / Πού; / Τίνος;</div>
+</nav>
+
+<div class="tabs">
+  <div class="tab active" id="tab-prep" onclick="switchMode('prep')">από / σε / στ-</div>
+  <div class="tab"        id="tab-poss" onclick="switchMode('poss')">Possessives</div>
+  <div class="tab"        id="tab-mix"  onclick="switchMode('mix')">Mixed</div>
+  <div class="tab"        id="tab-ref"  onclick="switchMode('ref')">Reference</div>
+</div>
+
+<div class="score-bar" id="score-bar">
+  <div class="score-card"><div class="score-label">Correct</div><div class="score-val" id="sc">0</div></div>
+  <div class="score-card"><div class="score-label">Wrong</div><div class="score-val" id="sw">0</div></div>
+  <div class="score-card"><div class="score-label">Streak</div><div class="score-val" id="ss">0</div></div>
+</div>
+
+<div class="wrap">
+
+  <!-- QUIZ VIEW -->
+  <div id="quiz-view">
+    <div class="rule-box" id="rule-box"></div>
+    <div class="progress" id="prog">Question 1</div>
+    <div class="sentence-card">
+      <div class="retry-badge" id="retry-badge" style="display:none">↩ Try again</div>
+      <div class="later-badge" id="later-badge" style="display:none">🔁 Review</div>
+      <div class="sentence-badge" id="qbadge">FILL IN THE BLANK</div>
+      <div class="sentence-text" id="stext"></div>
+      <div class="sentence-translation" id="stransl"></div>
+      <div class="sentence-hint" id="shint"></div>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="fb" style="display:none"></div>
+    <button class="next-btn" id="nb" style="display:none" onclick="nextQ()">Next →</button>
+  </div>
+
+  <!-- REFERENCE VIEW -->
+  <div id="ref-view" style="display:none">
+
+    <div class="ref-section-title">από — "from" (preposition + article)</div>
+    <div class="ref-table-wrap">
+      <table>
+        <thead><tr><th>Article</th><th>Rule</th><th>Example</th><th>English</th></tr></thead>
+        <tbody>
+          <tr><td>η (fem)</td><td>από + την</td><td>από την Γερμανία</td><td>from Germany</td></tr>
+          <tr><td>ο (masc)</td><td>από + τον</td><td>από τον Καναδά</td><td>from Canada</td></tr>
+          <tr><td>το (neut)</td><td>από + το</td><td>από το Μεξικό</td><td>from Mexico</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="ref-section-title">σε — "in / at / to" → contracts with article</div>
+    <div class="ref-table-wrap">
+      <table>
+        <thead><tr><th>Article</th><th>Rule</th><th>Result</th><th>Example</th><th>English</th></tr></thead>
+        <tbody>
+          <tr><td>η (fem)</td><td>σε + την → σε+τ</td><td><strong>στην</strong></td><td>στην Ευρώπη</td><td>in Europe</td></tr>
+          <tr><td>ο (masc)</td><td>σε + τον → σε+τ</td><td><strong>στον</strong></td><td>στον Καναδά</td><td>in Canada</td></tr>
+          <tr><td>το (neut)</td><td>σε + το → σε+τ</td><td><strong>στο</strong></td><td>στο Μεξικό</td><td>in Mexico</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="ref-section-title">Possessives — follows the noun</div>
+    <div class="ex-box">
+      <div><span class="gr">Εγώ → μου</span><span class="en">Είναι το σπίτι μου. (It's my house.)</span></div>
+      <div><span class="gr">Εσύ → σου</span><span class="en">Είναι η καμερά σου. (It's your camera.)</span></div>
+      <div><span class="gr">Αυτός → του</span><span class="en">Είναι το παιδί του. (It's his child.)</span></div>
+      <div><span class="gr">Αυτή → της</span><span class="en">Είναι η φίλη της. (It's her friend.)</span></div>
+      <div><span class="gr">Αυτό → του</span><span class="en">Είναι το ποδήλατό του. (It's its/his bicycle.)</span></div>
+      <div><span class="gr">Εμείς → μας</span><span class="en">Είναι το αυτοκίνητό μας. (It's our car.)</span></div>
+      <div><span class="gr">Εσείς → σας</span><span class="en">Είναι τα παιδιά σας. (They're your children.)</span></div>
+      <div><span class="gr">Αυτοί/ές/ά → τους</span><span class="en">Είναι το κομπιούτερ τους. (It's their computer.)</span></div>
+    </div>
+
+    <div class="ref-section-title">Quick tip: article genders</div>
+    <div class="ref-table-wrap">
+      <table>
+        <thead><tr><th>Gender</th><th>Article</th><th>από</th><th>σε →</th></tr></thead>
+        <tbody>
+          <tr><td>Feminine η</td><td>η Ελλάδα</td><td>από <strong>την</strong> Ελλάδα</td><td><strong>στην</strong> Ελλάδα</td></tr>
+          <tr><td>Masculine ο</td><td>ο Καναδάς</td><td>από <strong>τον</strong> Καναδά</td><td><strong>στον</strong> Καναδά</td></tr>
+          <tr><td>Neuter το</td><td>το Μεξικό</td><td>από <strong>το</strong> Μεξικό</td><td><strong>στο</strong> Μεξικό</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <button class="ref-back-btn" onclick="backFromRef()">← Back to practice</button>
+  </div>
+
+  <!-- FINISH VIEW -->
+  <div id="finish-view" style="display:none">
+    <div class="finish-screen">
+      <h2 id="fin-msg"></h2>
+      <p id="fin-score" style="color:var(--muted);font-size:15px;margin-bottom:.5rem"></p>
+      <div id="fin-mistakes" style="margin-top:1rem;text-align:left"></div>
+      <button class="restart-btn" onclick="restartCurrent()">Practice again →</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────
+// APO QUESTIONS — από + article
+// ─────────────────────────────────────────────────────────
+const APO_Q = [
+  // η → από την
+  {gr:'Είμαι ___ Ελλάδα.',              en:'I am from Greece.',           answer:'από την', d:['από τον','από το','στην'],         hint:'η Ελλάδα → feminine'},
+  {gr:'Είμαι ___ Γερμανία.',            en:'I am from Germany.',          answer:'από την', d:['από τον','από το','στην'],         hint:'η Γερμανία → feminine'},
+  {gr:'Είμαι ___ Ισπανία.',             en:'I am from Spain.',            answer:'από την', d:['από τον','από το','στην'],         hint:'η Ισπανία → feminine'},
+  {gr:'Είμαι ___ Ιταλία.',              en:'I am from Italy.',            answer:'από την', d:['από τον','από το','στη'],          hint:'η Ιταλία → feminine'},
+  {gr:'Είμαι ___ Γαλλία.',              en:'I am from France.',           answer:'από την', d:['από τον','από το','στην'],         hint:'η Γαλλία → feminine'},
+  {gr:'Είμαι ___ Ρωσία.',               en:'I am from Russia.',           answer:'από την', d:['από τον','από το','στην'],         hint:'η Ρωσία → feminine'},
+  {gr:'Είμαι ___ Πολωνία.',             en:'I am from Poland.',           answer:'από την', d:['από τον','από το','στην'],         hint:'η Πολωνία → feminine'},
+  {gr:'Είμαι ___ Ουκρανία.',            en:'I am from Ukraine.',          answer:'από την', d:['από τον','από το','στην'],         hint:'η Ουκρανία → feminine'},
+  {gr:'Είμαι ___ Τουρκία.',             en:'I am from Turkey.',           answer:'από την', d:['από τον','από το','στην'],         hint:'η Τουρκία → feminine'},
+  {gr:'Είμαι ___ Αυστραλία.',           en:'I am from Australia.',        answer:'από την', d:['από τον','από το','στην'],         hint:'η Αυστραλία → feminine'},
+  // ο → από τον
+  {gr:'Είμαι ___ Καναδά.',              en:'I am from Canada.',           answer:'από τον', d:['από την','από το','στον'],         hint:'ο Καναδάς → masculine'},
+  {gr:'Είμαι ___ Παναμά.',              en:'I am from Panama.',           answer:'από τον', d:['από την','από το','στον'],         hint:'ο Παναμάς → masculine'},
+  {gr:'Είμαι ___ Λίβανο.',              en:'I am from Lebanon.',          answer:'από τον', d:['από την','από το','στον'],         hint:'ο Λίβανος → masculine'},
+  // το → από το
+  {gr:'Είμαι ___ Μεξικό.',              en:'I am from Mexico.',           answer:'από το',  d:['από την','από τον','στο'],         hint:'το Μεξικό → neuter'},
+  {gr:'Είμαι ___ Περού.',               en:'I am from Peru.',             answer:'από το',  d:['από την','από τον','στο'],         hint:'το Περού → neuter'},
+  {gr:'Είμαι ___ Βέλγιο.',              en:'I am from Belgium.',          answer:'από το',  d:['από την','από τον','στο'],         hint:'το Βέλγιο → neuter'},
+  {gr:'Είμαι ___ Μαρόκο.',              en:'I am from Morocco.',          answer:'από το',  d:['από την','από τον','στο'],         hint:'το Μαρόκο → neuter'},
+  {gr:'Είμαι ___ Ισραήλ.',              en:'I am from Israel.',           answer:'από το',  d:['από την','από τον','στο'],         hint:'το Ισραήλ → neuter'},
+  // mixed — choose the full form
+  {gr:'- Από πού είσαι; - ___ Βρετανία.', en:'- Where are you from? - From Britain.', answer:'Από την', d:['Από τον','Από το','Στην'], hint:'η Βρετανία → feminine'},
+  {gr:'- Από πού είσαι; - ___ Σουηδία.',  en:'- Where are you from? - From Sweden.',  answer:'Από την', d:['Από τον','Από το','Στην'], hint:'η Σουηδία → feminine'},
+];
+
+// ─────────────────────────────────────────────────────────
+// SE QUESTIONS — σε → στην/στον/στο
+// ─────────────────────────────────────────────────────────
+const SE_Q = [
+  // η → στην
+  {gr:'Η Αθήνα είναι ___ Ελλάδα.',       en:'Athens is in Greece.',              answer:'στην', d:['στον','στο','από την'],   hint:'η Ελλάδα → στην'},
+  {gr:'Το Βερολίνο είναι ___ Γερμανία.', en:'Berlin is in Germany.',             answer:'στη',  d:['στον','στο','από την'],   hint:'η Γερμανία → στη(ν)'},
+  {gr:'Ζω ___ Ευρώπη.',                  en:'I live in Europe.',                  answer:'στην', d:['στον','στο','από την'],   hint:'η Ευρώπη → στην'},
+  {gr:'Ο Πύργος του Άιφελ είναι ___ Γαλλία.', en:'The Eiffel Tower is in France.',answer:'στη', d:['στον','στο','από τη'],   hint:'η Γαλλία → στη(ν)'},
+  {gr:'Το Κολοσσαίο είναι ___ Ιταλία.',  en:'The Colosseum is in Italy.',         answer:'στην', d:['στον','στο','από την'],   hint:'η Ιταλία → στην'},
+  {gr:'Το Φλαμένκο είναι ___ Ισπανία.',  en:'Flamenco is from Spain.',            answer:'στην', d:['στον','στο','από την'],   hint:'η Ισπανία → στην'},
+  {gr:'Ζεις ___ Ελλάδα;',               en:'Do you live in Greece?',             answer:'στην', d:['στον','στο','από'],        hint:'η Ελλάδα → στην'},
+  // ο → στον
+  {gr:'Το Τορόντο είναι ___ Καναδά.',    en:'Toronto is in Canada.',              answer:'στον', d:['στην','στο','από τον'],   hint:'ο Καναδάς → στον'},
+  {gr:'Ζω ___ Λίβανο.',                  en:'I live in Lebanon.',                 answer:'στον', d:['στην','στο','από τον'],   hint:'ο Λίβανος → στον'},
+  {gr:'Η Ακρόπολη είναι ___ Παρθενώνα.', en:'The Acropolis is on the Parthenon.', answer:'στον', d:['στην','στο','από τον'],   hint:'ο Παρθενώνας → στον'},
+  // το → στο
+  {gr:'Ζω ___ Μεξικό.',                  en:'I live in Mexico.',                  answer:'στο',  d:['στην','στον','από το'],   hint:'το Μεξικό → στο'},
+  {gr:'Το Μάτσου Πίτσου είναι ___ Περού.',en:'Machu Picchu is in Peru.',          answer:'στο',  d:['στην','στον','από το'],   hint:'το Περού → στο'},
+  {gr:'Μένω ___ Βέλγιο.',                en:'I live in Belgium.',                 answer:'στο',  d:['στην','στον','από το'],   hint:'το Βέλγιο → στο'},
+  {gr:'Ζω ___ Μαρόκο.',                  en:'I live in Morocco.',                 answer:'στο',  d:['στην','στον','από το'],   hint:'το Μαρόκο → στο'},
+  // choose full answer
+  {gr:'Πού μένεις; ___ Γερμανία.',       en:'Where do you live? In Germany.',     answer:'Στη',  d:['Στον','Στο','Από τη'],    hint:'η Γερμανία → στη(ν)'},
+  {gr:'Πού είναι η Σαμουράι; ___ Ιαπωνία.', en:'Where is Samurai from? In Japan.',answer:'Στην', d:['Στον','Στο','Από την'],   hint:'η Ιαπωνία → στην'},
+  {gr:'Πού μένεις; ___ Καναδά.',         en:'Where do you live? In Canada.',      answer:'Στον', d:['Στην','Στο','Από τον'],   hint:'ο Καναδάς → στον'},
+  {gr:'Πού είναι η Κανκούν; ___ Μεξικό.',en:'Where is Cancún? In Mexico.',        answer:'Στο',  d:['Στην','Στον','Από το'],   hint:'το Μεξικό → στο'},
+];
+
+// ─────────────────────────────────────────────────────────
+// POSSESSIVES QUESTIONS
+// ─────────────────────────────────────────────────────────
+const POSS_Q = [
+  // From the lesson exactly
+  {gr:'Εγώ έχω ένα σπίτι. Είναι το σπίτι ___ .',     en:'I have a house. It is my house.',            answer:'μου',  d:['σου','του','μας'],   hint:'εγώ → μου'},
+  {gr:'Εσύ έχεις μια κάμερα. Είναι η καμερά ___ .',   en:'You have a camera. It is your camera.',      answer:'σου',  d:['μου','της','σας'],   hint:'εσύ → σου'},
+  {gr:'Ο Νίκος έχει ένα παιδί. Είναι το παιδί ___ .', en:'Nikos has a child. It is his child.',        answer:'του',  d:['μου','σου','τους'],  hint:'αυτός → του'},
+  {gr:'Η Μαρία έχει μια φίλη. Είναι η φίλη ___ .',    en:'Maria has a friend. It is her friend.',      answer:'της',  d:['μου','σου','τους'],  hint:'αυτή → της'},
+  {gr:'Εμείς έχουμε ένα αυτοκίνητο. Είναι το αυτοκίνητό ___ .', en:'We have a car. It is our car.',    answer:'μας',  d:['μου','σας','τους'],  hint:'εμείς → μας'},
+  {gr:'Εσείς έχετε δυο παιδιά. Είναι τα παιδιά ___ .',en:'You have two children. They are your children.', answer:'σας', d:['μας','σου','τους'], hint:'εσείς → σας'},
+  {gr:'Αυτοί έχουν ένα κομπιούτερ. Είναι το κομπιούτερ ___ .', en:'They have a computer. It is their computer.', answer:'τους', d:['μου','μας','σας'], hint:'αυτοί → τους'},
+  {gr:'Αυτές έχουν ένα σκυλάκι. Είναι το σκυλάκι ___ .',en:'They (f) have a puppy. It is their puppy.', answer:'τους', d:['μου','της','σας'],   hint:'αυτές → τους'},
+  {gr:'Αυτά τα παιδιά έχουν ένα σκραμπλ. Είναι το σκραμπλ ___ .', en:'These children have Scrabble. It is their Scrabble.', answer:'τους', d:['μας','σας','της'], hint:'αυτά → τους'},
+  // Extra possessive sentences
+  {gr:'Πού είναι το σπίτι ___ ; (my)',               en:'Where is my house?',                          answer:'μου',  d:['σου','του','μας'],   hint:'my → μου'},
+  {gr:'Αυτή είναι η τσάντα ___ . (your - sing.)',    en:'This is your bag.',                           answer:'σου',  d:['μου','της','σας'],   hint:'your (sing.) → σου'},
+  {gr:'Ποιος είναι ο φίλος ___ ; (her)',              en:'Who is her friend?',                          answer:'της',  d:['μου','τους','σας'],  hint:'her → της'},
+  {gr:'Το σπίτι ___ είναι μεγάλο. (our)',             en:'Our house is big.',                           answer:'μας',  d:['μου','σας','τους'],  hint:'our → μας'},
+  {gr:'Πού είναι τα παιδιά ___ ; (your - pl.)',       en:'Where are your children?',                    answer:'σας',  d:['μας','τους','σου'],  hint:'your (pl.) → σας'},
+  {gr:'Ο σκύλος ___ είναι μικρός. (their)',           en:'Their dog is small.',                         answer:'τους', d:['μας','σας','του'],   hint:'their → τους'},
+  {gr:'Αυτό είναι το αυτοκίνητο ___ . (his)',         en:'This is his car.',                            answer:'του',  d:['μου','τους','σας'],  hint:'his → του'},
+  {gr:'Η μητέρα ___ είναι στην Αθήνα. (my)',          en:'My mother is in Athens.',                     answer:'μου',  d:['σου','της','μας'],   hint:'my → μου'},
+  {gr:'Πού είναι το τηλέφωνό ___ ; (your - sing.)',   en:'Where is your phone?',                        answer:'σου',  d:['μου','του','σας'],   hint:'your (sing.) → σου'},
+];
+
+// ─────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────
+let curMode = 'apo';
+let q=[], idx=0, cor=0, wr=0, str=0, mist=[], answered=false;
+
+function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
+function setScores(a,b,c){document.getElementById('sc').textContent=a;document.getElementById('sw').textContent=b;document.getElementById('ss').textContent=c;}
+
+function sched(item){
+  q.splice(idx+1,0,{...item,_retry:'immediate'});
+  const d=Math.min(3+Math.floor(Math.random()*3),q.length-idx-1);
+  q.splice(idx+2+d,0,{...item,_retry:'delayed'});
+}
+function failRetry(item){
+  const r=item._retry;
+  if(!r) sched(item);
+  else if(r==='immediate'){q.splice(idx+1,0,{...item,_retry:'immediate'});q.splice(Math.min(idx+4,q.length),0,{...item,_retry:'delayed'});}
+  else q.splice(idx+1,0,{...item,_retry:'immediate'});
+}
+
+// ─────────────────────────────────────────────────────────
+// RULES TEXT
+// ─────────────────────────────────────────────────────────
+const RULES = {
+  prep:'Choose the correct form of <strong>από</strong> (from) or <strong>σε</strong> (in/at/to) + article.<br><span class="formula">η → από την / στην</span> &nbsp; <span class="formula">ο → από τον / στον</span> &nbsp; <span class="formula">το → από το / στο</span>',
+  poss:'Choose the correct <strong>possessive pronoun</strong> to complete the sentence.<br><span class="formula">εγώ→μου &nbsp; εσύ→σου &nbsp; αυτός/αυτό→του &nbsp; αυτή→της &nbsp; εμείς→μας &nbsp; εσείς→σας &nbsp; αυτοί/ές/ά→τους</span>',
+  mix: 'Mixed questions covering <strong>από</strong>, <strong>σε/στ-</strong>, and <strong>possessives</strong>. The badge tells you which topic each question is.',
+};
+
+// ─────────────────────────────────────────────────────────
+// SWITCH MODE
+// ─────────────────────────────────────────────────────────
+function switchMode(m){
+  ['prep','poss','mix','ref'].forEach(id=>{
+    document.getElementById('tab-'+id).classList.remove('active');
+  });
+  document.getElementById('ref-view').style.display='none';
+  document.getElementById('quiz-view').style.display='block';
+  document.getElementById('finish-view').style.display='none';
+  document.getElementById('score-bar').style.display='flex';
+
+  if(m==='ref'){
+    document.getElementById('tab-ref').classList.add('active');
+    document.getElementById('quiz-view').style.display='none';
+    document.getElementById('score-bar').style.display='none';
+    document.getElementById('ref-view').style.display='block';
+    return;
+  }
+  curMode=m;
+  document.getElementById('tab-'+m).classList.add('active');
+  document.getElementById('rule-box').innerHTML=RULES[m];
+  startQuiz();
+}
+
+function backFromRef(){
+  document.getElementById('ref-view').style.display='none';
+  document.getElementById('score-bar').style.display='flex';
+  document.getElementById('quiz-view').style.display='block';
+  document.getElementById('tab-ref').classList.remove('active');
+  document.getElementById('tab-'+curMode).classList.add('active');
+}
+
+function restartCurrent(){document.getElementById('finish-view').style.display='none';startQuiz();}
+
+// ─────────────────────────────────────────────────────────
+// START QUIZ
+// ─────────────────────────────────────────────────────────
+function startQuiz(){
+  let pool;
+  if(curMode==='prep') pool=shuf([...APO_Q,...SE_Q]);
+  else if(curMode==='poss') pool=[...POSS_Q];
+  else pool=shuf([...APO_Q,...SE_Q,...POSS_Q]);
+
+  q=shuf(pool);
+  idx=0;cor=0;wr=0;str=0;mist=[];answered=false;
+  setScores(0,0,0);
+  document.getElementById('finish-view').style.display='none';
+  document.getElementById('quiz-view').style.display='block';
+  showQ();
+}
+
+// ─────────────────────────────────────────────────────────
+// SHOW QUESTION
+// ─────────────────────────────────────────────────────────
+function showQ(){
+  answered=false;
+  const s=q[idx];
+  const r=s._retry||null;
+  document.getElementById('retry-badge').style.display=r==='immediate'?'block':'none';
+  document.getElementById('later-badge').style.display=r==='delayed'?'block':'none';
+  document.getElementById('fb').style.display='none';
+  document.getElementById('nb').style.display='none';
+  document.getElementById('prog').textContent='Question '+(idx+1)+' of '+q.length;
+
+  // Badge label by type
+  const badge = APO_Q.includes(s)||q.indexOf(s)>=0&&s.hint&&s.hint.includes('→')
+    ? (s.answer.startsWith('από')||s.answer.startsWith('Από') ? 'ΑΠΌ (FROM)' : s.answer.startsWith('στ')||s.answer.startsWith('Στ') ? 'ΣΕ / ΣΤ- (IN/AT)' : 'ΚΤΗΤΙΚΆ (POSSESSIVES)')
+    : 'FILL IN THE BLANK';
+
+  // Simpler badge detection
+  const ans = s.answer.toLowerCase();
+  let badgeText = 'FILL IN THE BLANK';
+  if(ans.startsWith('από')||ans.startsWith('απο')) badgeText='ΑΠΌ (FROM)';
+  else if(ans.startsWith('στ')) badgeText='ΣΕ → ΣΤ- (IN/AT)';
+  else if(['μου','σου','του','της','μας','σας','τους'].includes(ans)) badgeText='ΚΤΗΤΙΚΆ (POSSESSIVES)';
+  document.getElementById('qbadge').textContent=badgeText;
+
+  // Build sentence with blank
+  const parts=s.gr.split('___');
+  const el=document.getElementById('stext');el.innerHTML='';
+  el.appendChild(document.createTextNode(parts[0]));
+  const b=document.createElement('span');b.className='blank';b.textContent='?';el.appendChild(b);
+  el.appendChild(document.createTextNode(parts[1]||''));
+
+  document.getElementById('stransl').textContent=s.en;
+  document.getElementById('shint').textContent=s.hint?'💡 '+s.hint:'';
+
+  // Build choices — make sure answer is always included
+  const opts=shuf([s.answer,...s.d.slice(0,3)]);
+  const cc=document.getElementById('choices');cc.innerHTML='';
+  opts.forEach(opt=>{
+    const btn=document.createElement('button');
+    btn.className='choice-btn';
+    btn.textContent=opt;
+    btn.onclick=()=>pick(opt,s);
+    cc.appendChild(btn);
+  });
+}
+
+// ─────────────────────────────────────────────────────────
+// PICK ANSWER
+// ─────────────────────────────────────────────────────────
+function pick(chosen,s){
+  if(answered)return;answered=true;
+  const ok=chosen===s.answer;
+  document.querySelector('.blank').textContent=chosen;
+  document.querySelector('.blank').style.color=ok?'#3B6D11':'#A32D2D';
+  document.querySelectorAll('.choice-btn').forEach(b=>{
+    b.disabled=true;
+    if(b.textContent===s.answer) b.classList.add(ok?'correct':'reveal');
+    else if(b.textContent===chosen&&!ok) b.classList.add('wrong');
+  });
+  const fb=document.getElementById('fb');fb.style.display='block';
+  if(ok){
+    cor++;str++;
+    fb.className='feedback correct';
+    fb.innerHTML='✓ Correct! <strong>'+s.gr.replace('___',s.answer)+'</strong>';
+    document.getElementById('nb').textContent='Next →';
+  } else {
+    wr++;str=0;
+    fb.className='feedback wrong';
+    fb.innerHTML='✗ The answer is <strong>'+s.answer+'</strong> → '+s.gr.replace('___',s.answer)+'<br><em style="font-size:12px">'+s.en+'</em>';
+    mist.push(s);
+    failRetry(s);
+    document.getElementById('nb').textContent='Try again →';
+  }
+  setScores(cor,wr,str);
+  document.getElementById('nb').style.display='block';
+}
+
+function nextQ(){
+  idx++;
+  if(idx>=q.length) showFinish();
+  else showQ();
+}
+
+// ─────────────────────────────────────────────────────────
+// FINISH
+// ─────────────────────────────────────────────────────────
+function showFinish(){
+  document.getElementById('quiz-view').style.display='none';
+  const tot=cor+wr,pct=tot?Math.round(cor/tot*100):0;
+  document.getElementById('fin-msg').textContent=pct>=90?'Excellent! 🎉':pct>=70?'Good progress! 👍':'Keep going! 📚';
+  document.getElementById('fin-score').textContent=cor+' correct out of '+tot+' ('+pct+'%)';
+  const mm=document.getElementById('fin-mistakes');mm.innerHTML='';
+  if(mist.length){
+    const hdr=document.createElement('p');hdr.style.cssText='font-size:13px;color:var(--muted);margin-bottom:8px';
+    hdr.textContent='Sentences to review:';mm.appendChild(hdr);
+    const seen=new Set();
+    mist.forEach(m=>{
+      if(!seen.has(m.gr)){seen.add(m.gr);
+        const d=document.createElement('div');d.className='mistake-item';
+        d.innerHTML=m.gr.replace('___','<strong>'+m.answer+'</strong>')+'<br><em style="font-size:12px">'+m.en+'</em>';
+        mm.appendChild(d);
+      }
+    });
+  } else {mm.innerHTML='<p style="color:#3B6D11;font-size:14px">Perfect — no mistakes!</p>';}
+  document.getElementById('finish-view').style.display='block';
+}
+
+switchMode('prep');
+</script>
+</body>
+</html>

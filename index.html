@@ -88,6 +88,13 @@ nav {
 }
 .nav-logo span { color: var(--mid); }
 
+.nav-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
 .nav-tag {
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 11px;
@@ -98,6 +105,36 @@ nav {
   border: 1px solid rgba(100,140,180,0.3);
   padding: 5px 14px;
   border-radius: 2px;
+  display: inline-block;
+}
+
+.nav-sub-tags {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 4px;
+}
+
+.nav-stat {
+  text-align: center;
+}
+
+.nav-stat-n {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 1.6rem;
+  letter-spacing: -.02em;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.nav-stat-l {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 1px;
 }
 
 /* ── HERO CENTRE ── */
@@ -229,8 +266,7 @@ nav {
   font-family: 'Barlow Condensed', sans-serif;
   font-weight: 700;
   font-size: clamp(1rem, 2.5vw, 1.3rem);
-  letter-spacing: .08em;
-  text-transform: uppercase;
+  letter-spacing: .06em;
   color: var(--mid);
   margin-bottom: .35rem;
 }
@@ -458,7 +494,19 @@ footer {
 
   <nav>
     <div class="nav-logo">Greek<span>Games</span></div>
-    <div class="nav-tag">🇬🇷 &nbsp;Ελληνικά · A1</div>
+    <div class="nav-right">
+      <div class="nav-tag">🇬🇷 &nbsp;Ελληνικά · A1</div>
+      <div class="nav-sub-tags">
+        <div class="nav-stat">
+          <div class="nav-stat-n">A1</div>
+          <div class="nav-stat-l">Level</div>
+        </div>
+        <div class="nav-stat">
+          <div class="nav-stat-n">Free</div>
+          <div class="nav-stat-l">Forever</div>
+        </div>
+      </div>
+    </div>
   </nav>
 
   <div class="hero-centre">
@@ -470,12 +518,6 @@ footer {
     <a class="hero-cta" href="#games">Browse Games <span>→</span></a>
   </div>
 
-  <div class="hero-bottom">
-    <div class="stat"><div class="stat-n">6</div><div class="stat-l">Games</div></div>
-    <div class="stat"><div class="stat-n">95+</div><div class="stat-l">Vocab Words</div></div>
-    <div class="stat"><div class="stat-n">A1</div><div class="stat-l">Level</div></div>
-    <div class="stat"><div class="stat-n">Free</div><div class="stat-l">Forever</div></div>
-  </div>
 </section>
 
 <!-- DIVIDER -->
@@ -668,6 +710,35 @@ footer {
       <div class="card-num">06 · Vocabulary</div>
       <div class="card-title">Nationalities</div>
       <p class="card-desc">55 countries — country names, male & female forms, language and adjective, plus fill-in-the-sentence exercises. Από πού είσαι;</p>
+      <div class="card-play">Play now <span class="card-play-arrow">→</span></div>
+    </div>
+  </a>
+
+  <a class="card" href="greek_prepositions.html" data-c="blue">
+    <div class="card-img-wrap">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="100%" height="100%">
+        <rect width="600" height="400" fill="#1b3f72"/>
+        <!-- Big formula-style display -->
+        <rect x="40" y="55" width="250" height="90" rx="10" fill="white" fill-opacity="0.1" stroke="white" stroke-width="1.5"/>
+        <text x="165" y="95" font-family="Georgia,serif" font-size="22" fill="white" text-anchor="middle" opacity="0.9">από + <tspan font-weight="bold">την</tspan></text>
+        <text x="165" y="125" font-family="Georgia,serif" font-size="14" fill="white" text-anchor="middle" opacity="0.55">η Γερμανία → από την Γερμανία</text>
+        <rect x="310" y="55" width="250" height="90" rx="10" fill="white" fill-opacity="0.1" stroke="white" stroke-width="1.5"/>
+        <text x="435" y="95" font-family="Georgia,serif" font-size="22" fill="white" text-anchor="middle" opacity="0.9">σε + <tspan font-weight="bold">στην</tspan></text>
+        <text x="435" y="125" font-family="Georgia,serif" font-size="14" fill="white" text-anchor="middle" opacity="0.55">η Ευρώπη → στην Ευρώπη</text>
+        <!-- Possessives row -->
+        <rect x="40" y="170" width="520" height="80" rx="10" fill="white" fill-opacity="0.08" stroke="white" stroke-width="1.5"/>
+        <text x="300" y="202" font-family="Georgia,serif" font-size="16" fill="white" text-anchor="middle" opacity="0.85">μου · σου · του · της · μας · σας · τους</text>
+        <text x="300" y="228" font-family="Georgia,serif" font-size="13" fill="white" text-anchor="middle" opacity="0.45">Possessive pronouns</text>
+        <!-- Example sentence -->
+        <text x="300" y="295" font-family="Georgia,serif" font-size="17" fill="white" text-anchor="middle" opacity="0.7" font-style="italic">Είναι το σπίτι μου.</text>
+        <text x="300" y="322" font-family="Georgia,serif" font-size="13" fill="white" text-anchor="middle" opacity="0.4">It is my house.</text>
+        <text x="300" y="368" font-family="Georgia,serif" font-size="17" fill="white" text-anchor="middle" opacity="0.6" letter-spacing="4">PREPOSITIONS</text>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-num">07 · Grammar</div>
+      <div class="card-title">Από / Σε / Possessives</div>
+      <p class="card-desc">Practice από+article (από την/τον/το), σε→στην/στον/στο contractions, and possessive pronouns in sentences.</p>
       <div class="card-play">Play now <span class="card-play-arrow">→</span></div>
     </div>
   </a>

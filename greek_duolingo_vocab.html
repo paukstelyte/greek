@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greek Duolingo Vocabulary</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap');
+  :root{--bg:#deeef8;--surface:#fff;--surface2:#edf5fc;--ink:#0e1621;--blue:#1b3f72;--mid:#3468a8;--sky:#6aaad4;--fog:#c8dff0;--muted:#5a7a96;--border:rgba(100,160,210,0.25);--border2:rgba(100,160,210,0.4);--r:14px;}
+  @media(prefers-color-scheme:dark){:root{--bg:#0e1a26;--surface:#162030;--surface2:#1e2e40;--ink:#e8f2fa;--muted:#7aaac8;--border:rgba(100,160,210,0.15);--border2:rgba(100,160,210,0.3);}}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Crimson Pro',Georgia,serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+  nav{background:var(--blue);padding:.9rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
+  .nav-title{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;letter-spacing:.1em;color:#fff;text-transform:uppercase;}
+  .nav-title span{color:var(--fog);font-weight:400;}
+  .nav-credit{font-size:11px;color:rgba(255,255,255,0.45);font-family:'Barlow Condensed',sans-serif;letter-spacing:.05em;}
+  .nav-credit a{color:rgba(255,255,255,0.55);text-decoration:none;}
+
+  .cat-bar{display:flex;gap:5px;padding:1rem 1.5rem .4rem;max-width:780px;margin:0 auto;flex-wrap:wrap;}
+  .cat-btn{flex:1;min-width:75px;padding:.45rem .25rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;text-align:center;font-family:'Barlow Condensed',sans-serif;letter-spacing:.04em;text-transform:uppercase;transition:all .15s;line-height:1.3;}
+  .cat-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+
+  .score-bar{display:flex;gap:10px;padding:0 1.5rem .9rem;max-width:780px;margin:0 auto;}
+  .score-card{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.55rem;text-align:center;}
+  .score-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:2px;}
+  .score-val{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;}
+
+  .wrap{max-width:780px;margin:0 auto;padding:0 1.5rem 4rem;}
+
+  .rule-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.75rem 1.1rem;margin-bottom:.9rem;font-size:14px;color:var(--muted);line-height:1.7;}
+  .rule-box strong{color:var(--ink);}
+  .progress{font-size:12px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.05em;color:var(--muted);text-align:center;margin-bottom:.5rem;}
+
+  .q-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem 1.5rem;text-align:center;margin-bottom:1rem;position:relative;min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem;}
+  .q-badge{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--surface);background:var(--mid);padding:2px 10px;border-radius:20px;}
+  .q-hint{font-size:12px;color:var(--muted);}
+  .q-main{font-size:1.85rem;font-weight:600;color:var(--ink);line-height:1.2;}
+  .q-sub{font-size:13px;color:var(--muted);font-style:italic;}
+  .retry-badge{position:absolute;top:10px;right:12px;background:#fef3e2;color:#854F0B;font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;}
+  .later-badge{position:absolute;top:10px;left:12px;background:#e8f0fb;color:#1a4a8a;font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;}
+
+  /* Choices — show pronunciation under each Greek option */
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem;}
+  .choice-btn{padding:.65rem .5rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--ink);font-size:15px;cursor:pointer;font-family:'Crimson Pro',Georgia,serif;text-align:center;line-height:1.3;transition:background .12s;display:flex;flex-direction:column;align-items:center;gap:2px;}
+  .choice-btn .c-gr{font-size:16px;font-weight:600;}
+  .choice-btn .c-rom{font-size:11px;color:var(--muted);font-style:italic;font-family:'Barlow Condensed',sans-serif;letter-spacing:.03em;}
+  .choice-btn:hover:not(:disabled){background:var(--surface2);}
+  .choice-btn.correct{background:#EAF3DE;border-color:#639922;color:#3B6D11;}
+  .choice-btn.correct .c-rom{color:#639922;}
+  .choice-btn.wrong{background:#FCEBEB;border-color:#E24B4A;color:#A32D2D;}
+  .choice-btn.wrong .c-rom{color:#E24B4A;}
+  .choice-btn.reveal{background:#EAF3DE;border-color:#639922;color:#3B6D11;}
+  .choice-btn.reveal .c-rom{color:#639922;}
+
+  .feedback{border-radius:var(--r);padding:.8rem 1rem;margin-bottom:1rem;font-size:14px;line-height:1.7;}
+  .feedback.correct{background:#EAF3DE;color:#3B6D11;border:1px solid #639922;}
+  .feedback.wrong{background:#FCEBEB;color:#A32D2D;border:1px solid #E24B4A;}
+  .feedback .rom{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.04em;opacity:.8;}
+
+  .next-btn{width:100%;padding:.75rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface2);color:var(--ink);font-size:15px;cursor:pointer;font-family:'Crimson Pro',Georgia,serif;}
+  .next-btn:hover{background:var(--surface);}
+
+  /* Reference */
+  .ref-section{margin-bottom:1.5rem;}
+  .ref-title{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--mid);margin-bottom:.6rem;}
+  .ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:5px;}
+  .ref-row{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.45rem .8rem;font-size:13px;display:flex;flex-direction:column;gap:1px;}
+  .ref-gr{font-weight:600;color:var(--blue);}
+  .ref-rom{font-size:11px;color:var(--sky);font-family:'Barlow Condensed',sans-serif;letter-spacing:.03em;}
+  .ref-en{color:var(--muted);font-style:italic;font-size:12px;}
+  .ref-back-btn{width:100%;padding:.75rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--ink);font-size:14px;cursor:pointer;font-family:inherit;margin-top:1rem;}
+
+  .finish-screen{text-align:center;padding:2rem 1rem;}
+  .finish-screen h2{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;letter-spacing:.05em;margin-bottom:.4rem;}
+  .mistake-item{background:#FCEBEB;border-radius:var(--r);padding:.6rem 1rem;margin-bottom:.4rem;font-size:14px;color:#A32D2D;text-align:left;line-height:1.55;}
+  .mistake-item .rom{font-size:11px;font-family:'Barlow Condensed',sans-serif;opacity:.75;}
+  .restart-btn{margin-top:1.25rem;padding:.75rem 2rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--ink);font-size:15px;cursor:pointer;font-family:inherit;}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-title">Greek <span>Duolingo Words</span></div>
+  <div class="nav-credit">Vocabulary from <a href="https://duome.eu/vocabulary/en/el" target="_blank">duome.eu/vocabulary/en/el</a></div>
+</nav>
+
+<div class="cat-bar">
+  <button class="cat-btn active" id="cat-people"    onclick="setCategory('people')">People</button>
+  <button class="cat-btn"        id="cat-actions"   onclick="setCategory('actions')">Actions</button>
+  <button class="cat-btn"        id="cat-adjectives"onclick="setCategory('adjectives')">Describing</button>
+  <button class="cat-btn"        id="cat-things"    onclick="setCategory('things')">Things</button>
+  <button class="cat-btn"        id="cat-nature"    onclick="setCategory('nature')">Nature</button>
+  <button class="cat-btn"        id="cat-time"      onclick="setCategory('time')">Time</button>
+  <button class="cat-btn"        id="cat-abstract"  onclick="setCategory('abstract')">Abstract</button>
+  <button class="cat-btn"        id="cat-all"       onclick="setCategory('all')">All mixed</button>
+  <button class="cat-btn"        id="cat-ref"       onclick="setCategory('ref')">Reference</button>
+</div>
+
+<div class="score-bar" id="score-bar">
+  <div class="score-card"><div class="score-label">Correct</div><div class="score-val" id="sc">0</div></div>
+  <div class="score-card"><div class="score-label">Wrong</div><div class="score-val" id="sw">0</div></div>
+  <div class="score-card"><div class="score-label">Streak</div><div class="score-val" id="ss">0</div></div>
+</div>
+
+<div class="wrap">
+  <div id="quiz-view">
+    <div class="rule-box" id="rule-box"></div>
+    <div class="progress" id="prog">Question 1</div>
+    <div class="q-card">
+      <div class="retry-badge" id="retry-badge" style="display:none">↩ Try again</div>
+      <div class="later-badge" id="later-badge" style="display:none">🔁 Review</div>
+      <div class="q-badge" id="qbadge"></div>
+      <div class="q-hint">How do you say this in Greek?</div>
+      <div class="q-main" id="qmain">—</div>
+      <div class="q-sub"  id="qsub"></div>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="fb" style="display:none"></div>
+    <button class="next-btn" id="nb" style="display:none" onclick="nextQ()">Next →</button>
+  </div>
+
+  <div id="ref-view" style="display:none">
+    <div class="ref-section"><div class="ref-title">People &amp; Relationships</div><div class="ref-grid" id="ref-people"></div></div>
+    <div class="ref-section"><div class="ref-title">Actions &amp; Verbs</div><div class="ref-grid" id="ref-actions"></div></div>
+    <div class="ref-section"><div class="ref-title">Describing (Adjectives &amp; Adverbs)</div><div class="ref-grid" id="ref-adjectives"></div></div>
+    <div class="ref-section"><div class="ref-title">Things &amp; Objects</div><div class="ref-grid" id="ref-things"></div></div>
+    <div class="ref-section"><div class="ref-title">Nature &amp; Animals</div><div class="ref-grid" id="ref-nature"></div></div>
+    <div class="ref-section"><div class="ref-title">Time &amp; Numbers</div><div class="ref-grid" id="ref-time"></div></div>
+    <div class="ref-section"><div class="ref-title">Abstract &amp; Ideas</div><div class="ref-grid" id="ref-abstract"></div></div>
+    <button class="ref-back-btn" onclick="backFromRef()">← Back to practice</button>
+  </div>
+
+  <div id="finish-view" style="display:none">
+    <div class="finish-screen">
+      <h2 id="fin-msg"></h2>
+      <p id="fin-score" style="color:var(--muted);font-size:15px;margin-bottom:.5rem"></p>
+      <div id="fin-mistakes" style="margin-top:1rem;text-align:left"></div>
+      <button class="restart-btn" onclick="restartCurrent()">Practice again →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────
+// DATA from duome.eu/vocabulary/en/el
+// Format: { en, gr, rom, cat }
+// rom = romanised pronunciation from the site's [brackets]
+// ─────────────────────────────────────────────────────────
+const VOCAB = [
+
+  // PEOPLE & RELATIONSHIPS
+  {en:'man',              gr:'άντρας',        rom:'ántras',          cat:'people'},
+  {en:'woman',            gr:'γυναίκα',        rom:'gynaíka',         cat:'people'},
+  {en:'person / human',   gr:'άνθρωπος',       rom:'ánthrōpos',       cat:'people'},
+  {en:'child',            gr:'παιδί',          rom:'paidí',           cat:'people'},
+  {en:'boy',              gr:'αγόρι',          rom:'agóri',           cat:'people'},
+  {en:'girl',             gr:'κορίτσι',        rom:'korítsi',         cat:'people'},
+  {en:'son',              gr:'γιος',           rom:'gios',            cat:'people'},
+  {en:'daughter',         gr:'κόρη',           rom:'kórē',            cat:'people'},
+  {en:'mother',           gr:'μητέρα',         rom:'mētéra',          cat:'people'},
+  {en:'father',           gr:'πατέρας',        rom:'patéras',         cat:'people'},
+  {en:'grandmother',      gr:'γιαγιά',         rom:'giagiá',          cat:'people'},
+  {en:'grandfather',      gr:'παππούς',        rom:'pappoús',         cat:'people'},
+  {en:'brother',          gr:'αδελφός',        rom:'adelphós',        cat:'people'},
+  {en:'sister',           gr:'αδελφή',         rom:'adelphḗ',         cat:'people'},
+  {en:'friend (m)',       gr:'φίλος',          rom:'phílos',          cat:'people'},
+  {en:'friend (f)',       gr:'φίλη',           rom:'phílē',           cat:'people'},
+  {en:'doctor',           gr:'γιατρός',        rom:'giatrós',         cat:'people'},
+  {en:'teacher',          gr:'δάσκαλος',       rom:'dáskalos',        cat:'people'},
+  {en:'student (m)',      gr:'μαθητής',        rom:'mathētḗs',        cat:'people'},
+  {en:'student (f)',      gr:'μαθήτρια',       rom:'mathḗtria',       cat:'people'},
+  {en:'journalist',       gr:'δημοσιογράφος',  rom:'dēmosiográphos',  cat:'people'},
+  {en:'athlete',          gr:'αθλητής',        rom:'athlētḗs',        cat:'people'},
+  {en:'king',             gr:'βασιλιάς',       rom:'basiliás',        cat:'people'},
+  {en:'queen',            gr:'βασίλισσα',      rom:'basílissa',       cat:'people'},
+  {en:'neighbour',        gr:'γείτονας',       rom:'geítonas',        cat:'people'},
+  {en:'farmer',           gr:'αγρότης',        rom:'agrótēs',         cat:'people'},
+  {en:'referee / umpire', gr:'διαιτητής',      rom:'diaitētḗs',       cat:'people'},
+  {en:'lawyer',           gr:'δικηγόρος',      rom:'dikēgóros',       cat:'people'},
+  {en:'mayor',            gr:'δήμαρχος',       rom:'dḗmarchos',       cat:'people'},
+  {en:'judge',            gr:'δικαστής',       rom:'dikastḗs',        cat:'people'},
+
+  // ACTIONS & VERBS
+  {en:'I love',           gr:'αγαπάω',         rom:'agapáō',          cat:'actions'},
+  {en:'I buy',            gr:'αγοράζω',        rom:'agorázō',         cat:'actions'},
+  {en:'I listen / hear',  gr:'ακούω',          rom:'akoúō',           cat:'actions'},
+  {en:'I change',         gr:'αλλάζω',         rom:'allázō',          cat:'actions'},
+  {en:'I open',           gr:'ανοίγω',         rom:'anoígō',          cat:'actions'},
+  {en:'I reply / answer', gr:'απαντώ',         rom:'apantṓ',          cat:'actions'},
+  {en:'I feel',           gr:'αισθάνομαι',     rom:'aisthánomai',     cat:'actions'},
+  {en:'I follow',         gr:'ακολουθώ',       rom:'akolouthṓ',       cat:'actions'},
+  {en:'I put / set',      gr:'βάζω',           rom:'bázō',            cat:'actions'},
+  {en:'I go out',         gr:'βγαίνω',         rom:'bgaínō',          cat:'actions'},
+  {en:'I improve',        gr:'βελτιώνω',       rom:'beltiṓnō',        cat:'actions'},
+  {en:'I see / watch',    gr:'βλέπω',          rom:'blépō',           cat:'actions'},
+  {en:'I help',           gr:'βοηθώ',          rom:'boēthṓ',          cat:'actions'},
+  {en:'I find',           gr:'βρίσκω',         rom:'brískō',          cat:'actions'},
+  {en:'I laugh',          gr:'γελάω',          rom:'geláō',           cat:'actions'},
+  {en:'I fill',           gr:'γεμίζω',         rom:'gemízō',          cat:'actions'},
+  {en:'I know',           gr:'γνωρίζω',        rom:'gnōrízō',         cat:'actions'},
+  {en:'I write',          gr:'γράφω',          rom:'gráphō',          cat:'actions'},
+  {en:'I give',           gr:'δίνω',           rom:'dínō',            cat:'actions'},
+  {en:'I read / study',   gr:'διαβάζω',        rom:'diabázō',         cat:'actions'},
+  {en:'I show',           gr:'δείχνω',         rom:'deíchnō',         cat:'actions'},
+  {en:'I work',           gr:'δουλεύω',        rom:'douleúō',         cat:'actions'},
+  {en:'I become',         gr:'γίνομαι',        rom:'gínomai',         cat:'actions'},
+  {en:'I leave / let',    gr:'αφήνω',          rom:'aphḗnō',          cat:'actions'},
+  {en:'I try / taste',    gr:'δοκιμάζω',       rom:'dokimázō',        cat:'actions'},
+  {en:'I am bored',       gr:'βαριέμαι',       rom:'bariémai',        cat:'actions'},
+  {en:'I increase',       gr:'αυξάνω',         rom:'auxánō',          cat:'actions'},
+  {en:'I accept',         gr:'δέχομαι',        rom:'déchomai',        cat:'actions'},
+  {en:'I disagree',       gr:'διαφωνώ',        rom:'diaphōnṓ',        cat:'actions'},
+  {en:'I belong',         gr:'ανήκω',          rom:'anḗkō',           cat:'actions'},
+
+  // ADJECTIVES & DESCRIBING
+  {en:'expensive',        gr:'ακριβός',        rom:'akribós',         cat:'adjectives'},
+  {en:'exactly / precisely',gr:'ακριβώς',      rom:'akribṓs',         cat:'adjectives'},
+  {en:'funny',            gr:'αστείος',        rom:'asteíos',         cat:'adjectives'},
+  {en:'sick / ill',       gr:'άρρωστος',       rom:'árrōstos',        cat:'adjectives'},
+  {en:'ancient',          gr:'αρχαίος',        rom:'archaíos',        cat:'adjectives'},
+  {en:'open / light',     gr:'ανοιχτός',       rom:'anoichtós',       cat:'adjectives'},
+  {en:'different',        gr:'διαφορετικός',   rom:'diaphoretikós',   cat:'adjectives'},
+  {en:'difficult / hard', gr:'δύσκολος',       rom:'dýskolos',        cat:'adjectives'},
+  {en:'strong / powerful',gr:'δυνατός',        rom:'dynatós',         cat:'adjectives'},
+  {en:'boring',           gr:'βαρετός',        rom:'baretós',         cat:'adjectives'},
+  {en:'dirty',            gr:'βρώμικος',       rom:'brṓmikos',        cat:'adjectives'},
+  {en:'fast',             gr:'γρήγορος',       rom:'grḗgoros',        cat:'adjectives'},
+  {en:'slow',             gr:'αργός',          rom:'argós',           cat:'adjectives'},
+  {en:'heavy',            gr:'βαρύς',          rom:'barýs',           cat:'adjectives'},
+  {en:'full / packed',    gr:'γεμάτος',        rom:'gemátos',         cat:'adjectives'},
+  {en:'popular',          gr:'δημοφιλής',      rom:'dēmophilḗs',      cat:'adjectives'},
+  {en:'free (of charge)', gr:'δωρεάν',         rom:'dōreán',          cat:'adjectives'},
+  {en:'famous',           gr:'διάσημος',       rom:'diásēmos',        cat:'adjectives'},
+  {en:'funny / amusing',  gr:'διασκεδαστικός', rom:'diaskedastikós',  cat:'adjectives'},
+  {en:'brave',            gr:'γενναίος',       rom:'gennaíos',        cat:'adjectives'},
+  {en:'generous',         gr:'γενναιόδωρος',   rom:'gennaiódōros',    cat:'adjectives'},
+  {en:'comfortable',      gr:'άνετος',         rom:'ánetos',          cat:'adjectives'},
+  {en:'unfair / unjust',  gr:'άδικος',         rom:'ádikos',          cat:'adjectives'},
+  {en:'optimistic',       gr:'αισιόδοξος',     rom:'aisiódoxos',      cat:'adjectives'},
+  {en:'pessimistic',      gr:'απαισιόδοξος',   rom:'apaisiódoxos',    cat:'adjectives'},
+  {en:'incredible',       gr:'απίστευτος',     rom:'apísteutos',      cat:'adjectives'},
+  {en:'safe',             gr:'ασφαλής',        rom:'asphalḗs',        cat:'adjectives'},
+  {en:'necessary',        gr:'απαραίτητος',    rom:'aparaítētos',     cat:'adjectives'},
+  {en:'weak / powerless', gr:'αδύναμος',       rom:'adýnamos',        cat:'adjectives'},
+  {en:'quickly',          gr:'γρήγορα',        rom:'grḗgora',         cat:'adjectives'},
+
+  // THINGS & OBJECTS
+  {en:'book',             gr:'βιβλίο',         rom:'biblío',          cat:'things'},
+  {en:'library / bookcase',gr:'βιβλιοθήκη',   rom:'bibliothḗkē',     cat:'things'},
+  {en:'letter',           gr:'γράμμα',         rom:'grámma',          cat:'things'},
+  {en:'desk / office',    gr:'γραφείο',        rom:'grapheío',        cat:'things'},
+  {en:'gift / present',   gr:'δώρο',           rom:'dṓro',            cat:'things'},
+  {en:'room',             gr:'δωμάτιο',        rom:'dōmátio',         cat:'things'},
+  {en:'suitcase',         gr:'βαλίτσα',        rom:'balítsa',         cat:'things'},
+  {en:'boat',             gr:'βάρκα',          rom:'bárka',           cat:'things'},
+  {en:'car (informal)',   gr:'αμάξι',          rom:'amáxi',           cat:'things'},
+  {en:'car',              gr:'αυτοκίνητο',     rom:'autokínēto',      cat:'things'},
+  {en:'video',            gr:'βίντεο',         rom:'bínteo',          cat:'things'},
+  {en:'violin',           gr:'βιολί',          rom:'biolí',           cat:'things'},
+  {en:'bomb',             gr:'βόμβα',          rom:'bómba',           cat:'things'},
+  {en:'award / prize',    gr:'βραβείο',        rom:'brabeío',         cat:'things'},
+  {en:'egg',              gr:'αυγό',           rom:'augó',            cat:'things'},
+  {en:'passport',         gr:'διαβατήριο',     rom:'diabatḗrio',      cat:'things'},
+  {en:'apartment / flat', gr:'διαμέρισμα',     rom:'diamérisma',      cat:'things'},
+  {en:'diamond',          gr:'διαμάντι',       rom:'diamánti',        cat:'things'},
+  {en:'dollar',           gr:'δολάριο',        rom:'dolário',         cat:'things'},
+  {en:'tooth',            gr:'δόντι',          rom:'dónti',           cat:'things'},
+  {en:'road / street',    gr:'δρόμος',         rom:'drómos',          cat:'things'},
+  {en:'luggage / baggage',gr:'αποσκευές',      rom:'aposkeués',       cat:'things'},
+  {en:'address',          gr:'διεύθυνση',      rom:'dieúthynsē',      cat:'things'},
+  {en:'receipt',          gr:'απόδειξη',       rom:'apódeixē',        cat:'things'},
+  {en:'advertisement',    gr:'διαφήμιση',      rom:'diaphḗmisē',      cat:'things'},
+  {en:'article',          gr:'άρθρο',          rom:'árthro',          cat:'things'},
+  {en:'vase',             gr:'βάζο',           rom:'bázo',            cat:'things'},
+  {en:'needle',           gr:'βελόνα',         rom:'belóna',          cat:'things'},
+  {en:'glove',            gr:'γάντι',          rom:'gánti',           cat:'things'},
+  {en:'tie / necktie',    gr:'γραβάτα',        rom:'grabáta',         cat:'things'},
+
+  // NATURE & ANIMALS
+  {en:'horse',            gr:'άλογο',          rom:'álogo',           cat:'nature'},
+  {en:'fox',              gr:'αλεπού',         rom:'alepoú',          cat:'nature'},
+  {en:'alligator',        gr:'αλιγάτορας',     rom:'aligátoras',      cat:'nature'},
+  {en:'eagle',            gr:'αετός',          rom:'aetós',           cat:'nature'},
+  {en:'bear',             gr:'αρκούδα',        rom:'arkoúda',         cat:'nature'},
+  {en:'spider',           gr:'αράχνη',         rom:'aráchnē',         cat:'nature'},
+  {en:'cow',              gr:'αγελάδα',        rom:'ageláda',         cat:'nature'},
+  {en:'donkey',           gr:'γάιδαρος',       rom:'gáidaros',        cat:'nature'},
+  {en:'cat',              gr:'γάτα',           rom:'gáta',            cat:'nature'},
+  {en:'dolphin',          gr:'δελφίνι',        rom:'delphíni',        cat:'nature'},
+  {en:'dinosaur',         gr:'δεινόσαυρος',    rom:'deinósauros',     cat:'nature'},
+  {en:'frog / toad',      gr:'βάτραχος',       rom:'bátrachos',       cat:'nature'},
+  {en:'gorilla',          gr:'γορίλας',        rom:'gorílas',         cat:'nature'},
+  {en:'pig',              gr:'γουρούνι',       rom:'gouroúni',        cat:'nature'},
+  {en:'seagull',          gr:'γλάρος',         rom:'gláros',          cat:'nature'},
+  {en:'hawk / falcon',    gr:'γεράκι',         rom:'geráki',          cat:'nature'},
+  {en:'tree',             gr:'δέντρο',         rom:'déntro',          cat:'nature'},
+  {en:'forest / woods',   gr:'δάσος',          rom:'dásos',           cat:'nature'},
+  {en:'mountain',         gr:'βουνό',          rom:'bounó',           cat:'nature'},
+  {en:'rock',             gr:'βράχος',         rom:'bráchos',         cat:'nature'},
+  {en:'rain',             gr:'βροχή',          rom:'brochḗ',          cat:'nature'},
+  {en:'wind',             gr:'αέρας',          rom:'aéras',           cat:'nature'},
+  {en:'sand',             gr:'άμμος',          rom:'ámmos',           cat:'nature'},
+  {en:'shore / coast',    gr:'ακτή',           rom:'aktḗ',            cat:'nature'},
+  {en:'star',             gr:'αστέρι',         rom:'astéri',          cat:'nature'},
+  {en:'earth / land',     gr:'γη',             rom:'gē',              cat:'nature'},
+  {en:'grass',            gr:'γρασίδι',        rom:'grasídi',         cat:'nature'},
+  {en:'pear',             gr:'αχλάδι',         rom:'achládi',         cat:'nature'},
+  {en:'avocado',          gr:'αβοκάντο',       rom:'abokánto',        cat:'nature'},
+  {en:'cucumber',         gr:'αγγούρι',        rom:'angoúri',         cat:'nature'},
+
+  // TIME & NUMBERS
+  {en:'tomorrow',         gr:'αύριο',          rom:'aúrio',           cat:'time'},
+  {en:'morning',          gr:'πρωί',           rom:'prōí',            cat:'time'},
+  {en:'afternoon',        gr:'απόγευμα',       rom:'apógeuma',        cat:'time'},
+  {en:'evening / night',  gr:'βράδυ',          rom:'brády',           cat:'time'},
+  {en:'tonight',          gr:'απόψε',          rom:'apópse',          cat:'time'},
+  {en:'week',             gr:'εβδομάδα',       rom:'ebdomáda',        cat:'time'},
+  {en:'month',            gr:'μήνας',          rom:'mḗnas',           cat:'time'},
+  {en:'year',             gr:'χρόνος',         rom:'chrónos',         cat:'time'},
+  {en:'century',          gr:'αιώνας',         rom:'aiṓnas',          cat:'time'},
+  {en:'decade',           gr:'δεκαετία',       rom:'dekaetía',        cat:'time'},
+  {en:'second (time)',    gr:'δευτερόλεπτο',   rom:'deuterólepto',    cat:'time'},
+  {en:'Monday',           gr:'Δευτέρα',        rom:'Deutéra',         cat:'time'},
+  {en:'ten',              gr:'δέκα',           rom:'déka',            cat:'time'},
+  {en:'twelve',           gr:'δώδεκα',         rom:'dṓdeka',          cat:'time'},
+  {en:'thirteen',         gr:'δεκατρία',       rom:'dekatría',        cat:'time'},
+  {en:'fifteen',          gr:'δεκαπέντε',      rom:'dekapénte',       cat:'time'},
+  {en:'seventeen',        gr:'δεκαεφτά',       rom:'dekaephtá',       cat:'time'},
+  {en:'eighteen',         gr:'δεκαοκτώ',       rom:'dekaoktṓ',        cat:'time'},
+  {en:'nineteen',         gr:'δεκαεννιά',      rom:'dekaenniá',       cat:'time'},
+  {en:'seventy',          gr:'εβδομήντα',      rom:'ebdomḗnta',       cat:'time'},
+  {en:'two hundred',      gr:'διακόσιοι',      rom:'diakósioi',       cat:'time'},
+  {en:'April',            gr:'Απρίλιος',       rom:'Aprílios',        cat:'time'},
+  {en:'August',           gr:'Αύγουστος',      rom:'Aúgoustos',       cat:'time'},
+  {en:'December',         gr:'Δεκέμβριος',     rom:'Dekémbrios',      cat:'time'},
+  {en:'spring',           gr:'άνοιξη',         rom:'ánoixē',          cat:'time'},
+  {en:'later',            gr:'αργότερα',       rom:'argótera',        cat:'time'},
+  {en:'late / slowly',    gr:'αργά',           rom:'argá',            cat:'time'},
+  {en:'departure',        gr:'αναχώρηση',      rom:'anachṓrēsē',      cat:'time'},
+  {en:'birthday',         gr:'γενέθλια',       rom:'genéthlia',       cat:'time'},
+  {en:'graduation',       gr:'αποφοίτηση',     rom:'apophoítēsē',     cat:'time'},
+
+  // ABSTRACT & IDEAS
+  {en:'love',             gr:'αγάπη',          rom:'agápē',           cat:'abstract'},
+  {en:'truth',            gr:'αλήθεια',        rom:'alḗtheia',        cat:'abstract'},
+  {en:'freedom',          gr:'ελευθερία',      rom:'eleuthería',      cat:'abstract'},
+  {en:'strength / power', gr:'δύναμη',         rom:'dýnamē',          cat:'abstract'},
+  {en:'justice',          gr:'δικαιοσύνη',     rom:'dikaiosýnē',      cat:'abstract'},
+  {en:'knowledge',        gr:'γνώση',          rom:'gnṓsē',           cat:'abstract'},
+  {en:'opinion',          gr:'γνώμη',          rom:'gnṓmē',           cat:'abstract'},
+  {en:'decision',         gr:'απόφαση',        rom:'apóphasē',        cat:'abstract'},
+  {en:'answer / reply',   gr:'απάντηση',       rom:'apántēsē',        cat:'abstract'},
+  {en:'change',           gr:'αλλαγή',         rom:'allagḗ',          cat:'abstract'},
+  {en:'search / quest',   gr:'αναζήτηση',      rom:'anazḗtēsē',       cat:'abstract'},
+  {en:'discovery',        gr:'ανακάλυψη',      rom:'anakálypsē',      cat:'abstract'},
+  {en:'result / outcome', gr:'αποτέλεσμα',     rom:'apotélesma',      cat:'abstract'},
+  {en:'failure',          gr:'αποτυχία',       rom:'apotychía',       cat:'abstract'},
+  {en:'distance',         gr:'απόσταση',       rom:'apóstasē',        cat:'abstract'},
+  {en:'disappointment',   gr:'απογοήτευση',    rom:'apogoḗteusē',     cat:'abstract'},
+  {en:'competition',      gr:'ανταγωνισμός',   rom:'antagōnismós',    cat:'abstract'},
+  {en:'democracy',        gr:'δημοκρατία',     rom:'dēmokratía',      cat:'abstract'},
+  {en:'creation',         gr:'δημιουργία',     rom:'dēmiourgía',      cat:'abstract'},
+  {en:'stress / anxiety', gr:'άγχος',          rom:'ánchos',          cat:'abstract'},
+  {en:'start / beginning',gr:'αρχή',           rom:'archḗ',           cat:'abstract'},
+  {en:'analysis',         gr:'ανάλυση',        rom:'análysē',         cat:'abstract'},
+  {en:'difference',       gr:'διαφορά',        rom:'diaphorá',        cat:'abstract'},
+  {en:'demonstration',    gr:'διαδήλωση',      rom:'diadḗlōsē',       cat:'abstract'},
+  {en:'doubt',            gr:'αμφιβολία',      rom:'amphibolía',      cat:'abstract'},
+  {en:'value / importance',gr:'αξία',          rom:'axía',            cat:'abstract'},
+  {en:'emergency / need', gr:'ανάγκη',         rom:'anánkē',          cat:'abstract'},
+  {en:'virtue',           gr:'αρετή',          rom:'aretḗ',           cat:'abstract'},
+  {en:'Acropolis',        gr:'ακρόπολη',       rom:'akrópolē',        cat:'abstract'},
+  {en:'Enlightenment',    gr:'διαφωτισμός',    rom:'diaphōtismós',    cat:'abstract'},
+];
+
+// ─────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────
+let curCat='people';
+let q=[],idx=0,cor=0,wr=0,str=0,mist=[],answered=false;
+
+function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
+function setScores(a,b,c){['sc','sw','ss'].forEach((id,i)=>document.getElementById(id).textContent=[a,b,c][i]);}
+function sched(item){q.splice(idx+1,0,{...item,_retry:'immediate'});const d=Math.min(3+Math.floor(Math.random()*3),q.length-idx-1);q.splice(idx+2+d,0,{...item,_retry:'delayed'});}
+function failRetry(item){const r=item._retry;if(!r)sched(item);else if(r==='immediate'){q.splice(idx+1,0,{...item,_retry:'immediate'});q.splice(Math.min(idx+4,q.length),0,{...item,_retry:'delayed'});}else q.splice(idx+1,0,{...item,_retry:'immediate'});}
+
+const CAT_LABELS={people:'PEOPLE',actions:'ACTIONS',adjectives:'DESCRIBING',things:'THINGS',nature:'NATURE',time:'TIME',abstract:'ABSTRACT',all:'ALL MIXED'};
+const CAT_RULES={
+  people:'See the English — choose the correct <strong>Greek word</strong> with its pronunciation.',
+  actions:'See the English verb — choose the correct <strong>Greek verb form</strong>.',
+  adjectives:'See the English — choose the correct <strong>Greek adjective or adverb</strong>.',
+  things:'See the English — choose the correct <strong>Greek word for this object</strong>.',
+  nature:'See the English — choose the correct <strong>Greek nature or animal word</strong>.',
+  time:'See the English — choose the correct <strong>Greek time word or number</strong>.',
+  abstract:'See the English — choose the correct <strong>Greek abstract concept</strong>.',
+  all:'All categories mixed. See English → choose Greek. Pronunciation shown on every answer!',
+};
+
+function setCategory(cat){
+  curCat=cat;
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('cat-'+cat).classList.add('active');
+  ['ref-view','quiz-view','finish-view'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('score-bar').style.display='flex';
+  if(cat==='ref'){document.getElementById('score-bar').style.display='none';buildRef();document.getElementById('ref-view').style.display='block';return;}
+  document.getElementById('rule-box').innerHTML=CAT_RULES[cat]||'';
+  document.getElementById('quiz-view').style.display='block';
+  startQuiz();
+}
+function backFromRef(){document.getElementById('ref-view').style.display='none';document.getElementById('score-bar').style.display='flex';setCategory(curCat==='ref'?'people':curCat);}
+function restartCurrent(){document.getElementById('finish-view').style.display='none';startQuiz();}
+
+function startQuiz(){
+  const pool=curCat==='all'?VOCAB:VOCAB.filter(v=>v.cat===curCat);
+  q=shuf([...pool]);idx=0;cor=0;wr=0;str=0;mist=[];answered=false;
+  setScores(0,0,0);
+  document.getElementById('finish-view').style.display='none';
+  document.getElementById('quiz-view').style.display='block';
+  showQ();
+}
+
+function showQ(){
+  answered=false;
+  const item=q[idx];const r=item._retry||null;
+  document.getElementById('retry-badge').style.display=r==='immediate'?'block':'none';
+  document.getElementById('later-badge').style.display=r==='delayed'?'block':'none';
+  document.getElementById('fb').style.display='none';
+  document.getElementById('nb').style.display='none';
+  document.getElementById('prog').textContent='Question '+(idx+1)+' of '+q.length;
+  document.getElementById('qbadge').textContent=CAT_LABELS[item.cat]||'VOCAB';
+  document.getElementById('qmain').textContent=item.en;
+  document.getElementById('qsub').textContent='';
+
+  // Build 4 choices — all show gr + rom
+  const catPool=VOCAB.filter(v=>v.cat===item.cat&&v.gr!==item.gr);
+  const pool=(catPool.length>=3?catPool:VOCAB.filter(v=>v.gr!==item.gr));
+  const distractors=shuf(pool).slice(0,3);
+  const opts=shuf([item,...distractors]);
+
+  const cc=document.getElementById('choices');cc.innerHTML='';
+  opts.forEach(opt=>{
+    const b=document.createElement('button');b.className='choice-btn';
+    b.innerHTML='<span class="c-gr">'+opt.gr+'</span><span class="c-rom">['+opt.rom+']</span>';
+    b.onclick=()=>pick(opt,item);cc.appendChild(b);
+  });
+}
+
+function pick(chosen,item){
+  if(answered)return;answered=true;
+  const ok=chosen.gr===item.gr;
+  document.querySelectorAll('.choice-btn').forEach(b=>{
+    b.disabled=true;
+    const gr=b.querySelector('.c-gr').textContent;
+    if(gr===item.gr)b.classList.add(ok?'correct':'reveal');
+    else if(gr===chosen.gr&&!ok)b.classList.add('wrong');
+  });
+  const fb=document.getElementById('fb');fb.style.display='block';
+  if(ok){
+    cor++;str++;
+    fb.className='feedback correct';
+    fb.innerHTML='✓ Correct! <strong>'+item.gr+'</strong> <span class="rom">['+item.rom+']</span> = '+item.en;
+    document.getElementById('nb').textContent='Next →';
+  } else {
+    wr++;str=0;
+    fb.className='feedback wrong';
+    fb.innerHTML='✗ It\'s <strong>'+item.gr+'</strong> <span class="rom">['+item.rom+']</span> = '+item.en;
+    mist.push(item);failRetry(item);
+    document.getElementById('nb').textContent='Try again →';
+  }
+  setScores(cor,wr,str);document.getElementById('nb').style.display='block';
+}
+function nextQ(){idx++;if(idx>=q.length)showFinish();else showQ();}
+
+function buildRef(){
+  ['people','actions','adjectives','things','nature','time','abstract'].forEach(cat=>{
+    const el=document.getElementById('ref-'+cat);if(!el)return;el.innerHTML='';
+    VOCAB.filter(v=>v.cat===cat).forEach(v=>{
+      const d=document.createElement('div');d.className='ref-row';
+      d.innerHTML='<span class="ref-gr">'+v.gr+'</span><span class="ref-rom">['+v.rom+']</span><span class="ref-en">'+v.en+'</span>';
+      el.appendChild(d);
+    });
+  });
+}
+
+function showFinish(){
+  document.getElementById('quiz-view').style.display='none';
+  const tot=cor+wr,pct=tot?Math.round(cor/tot*100):0;
+  document.getElementById('fin-msg').textContent=pct>=90?'Excellent! 🎉':pct>=70?'Good work! 👍':'Keep going! 📚';
+  document.getElementById('fin-score').textContent=cor+' correct out of '+tot+' ('+pct+'%)';
+  const mm=document.getElementById('fin-mistakes');mm.innerHTML='';
+  if(mist.length){
+    const hdr=document.createElement('p');hdr.style.cssText='font-size:13px;color:var(--muted);margin-bottom:8px';
+    hdr.textContent='Words to review:';mm.appendChild(hdr);
+    const seen=new Set();
+    mist.forEach(m=>{if(!seen.has(m.gr)){seen.add(m.gr);
+      const d=document.createElement('div');d.className='mistake-item';
+      d.innerHTML=m.en+' → <strong>'+m.gr+'</strong> <span class="rom">['+m.rom+']</span>';mm.appendChild(d);}});
+  } else mm.innerHTML='<p style="color:#3B6D11;font-size:14px">Perfect — no mistakes!</p>';
+  document.getElementById('finish-view').style.display='block';
+}
+
+setCategory('people');
+</script>
+</body>
+</html>

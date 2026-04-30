@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greek A1 Vocabulary</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap');
+  :root{--bg:#deeef8;--surface:#fff;--surface2:#edf5fc;--ink:#0e1621;--blue:#1b3f72;--mid:#3468a8;--sky:#6aaad4;--fog:#c8dff0;--muted:#5a7a96;--border:rgba(100,160,210,0.25);--border2:rgba(100,160,210,0.4);--r:14px;}
+  @media(prefers-color-scheme:dark){:root{--bg:#0e1a26;--surface:#162030;--surface2:#1e2e40;--ink:#e8f2fa;--muted:#7aaac8;--border:rgba(100,160,210,0.15);--border2:rgba(100,160,210,0.3);}}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Crimson Pro',Georgia,serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+  nav{background:var(--blue);padding:.9rem 2rem;display:flex;align-items:center;justify-content:space-between;}
+  .nav-title{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;letter-spacing:.1em;color:#fff;text-transform:uppercase;}
+  .nav-title span{color:var(--fog);font-weight:400;}
+  .cat-bar{display:flex;gap:5px;padding:1rem 1.5rem .4rem;max-width:760px;margin:0 auto;flex-wrap:wrap;}
+  .cat-btn{flex:1;min-width:80px;padding:.45rem .3rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;text-align:center;font-family:'Barlow Condensed',sans-serif;letter-spacing:.05em;text-transform:uppercase;transition:all .15s;line-height:1.3;}
+  .cat-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+  .score-bar{display:flex;gap:10px;padding:0 1.5rem .9rem;max-width:760px;margin:0 auto;}
+  .score-card{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.55rem;text-align:center;}
+  .score-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:2px;}
+  .score-val{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;}
+  .wrap{max-width:760px;margin:0 auto;padding:0 1.5rem 4rem;}
+  .rule-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.8rem 1.1rem;margin-bottom:.9rem;font-size:14px;color:var(--muted);line-height:1.7;}
+  .rule-box strong{color:var(--ink);}
+  .progress{font-size:12px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.05em;color:var(--muted);text-align:center;margin-bottom:.5rem;}
+  .q-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.6rem 1.5rem;text-align:center;margin-bottom:1rem;position:relative;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.35rem;}
+  .q-badge{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--surface);background:var(--mid);padding:2px 10px;border-radius:20px;}
+  .q-hint{font-size:12px;color:var(--muted);}
+  .q-main{font-size:1.85rem;font-weight:600;color:var(--ink);line-height:1.25;}
+  .q-sub{font-size:13px;color:var(--muted);font-style:italic;}
+  .retry-badge{position:absolute;top:10px;right:12px;background:#fef3e2;color:#854F0B;font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;}
+  .later-badge{position:absolute;top:10px;left:12px;background:#e8f0fb;color:#1a4a8a;font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem;}
+  .choice-btn{padding:.75rem .5rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--ink);font-size:16px;cursor:pointer;font-family:'Crimson Pro',Georgia,serif;text-align:center;line-height:1.35;transition:background .12s;}
+  .choice-btn:hover:not(:disabled){background:var(--surface2);}
+  .choice-btn.correct{background:#EAF3DE;border-color:#639922;color:#3B6D11;}
+  .choice-btn.wrong{background:#FCEBEB;border-color:#E24B4A;color:#A32D2D;}
+  .choice-btn.reveal{background:#EAF3DE;border-color:#639922;color:#3B6D11;}
+  .feedback{border-radius:var(--r);padding:.8rem 1rem;margin-bottom:1rem;font-size:14px;line-height:1.65;}
+  .feedback.correct{background:#EAF3DE;color:#3B6D11;border:1px solid #639922;}
+  .feedback.wrong{background:#FCEBEB;color:#A32D2D;border:1px solid #E24B4A;}
+  .next-btn{width:100%;padding:.75rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface2);color:var(--ink);font-size:15px;cursor:pointer;font-family:'Crimson Pro',Georgia,serif;}
+  .next-btn:hover{background:var(--surface);}
+  .ref-section{margin-bottom:1.5rem;}
+  .ref-title{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--mid);margin-bottom:.6rem;}
+  .ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:5px;}
+  .ref-row{display:flex;justify-content:space-between;align-items:baseline;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.45rem .8rem;font-size:13px;gap:.5rem;}
+  .ref-en{color:var(--muted);font-style:italic;flex:1;}
+  .ref-gr{font-weight:600;color:var(--blue);text-align:right;}
+  .ref-back-btn{width:100%;padding:.75rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--ink);font-size:14px;cursor:pointer;font-family:inherit;margin-top:1rem;}
+  .finish-screen{text-align:center;padding:2rem 1rem;}
+  .finish-screen h2{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;letter-spacing:.05em;margin-bottom:.4rem;}
+  .mistake-item{background:#FCEBEB;border-radius:var(--r);padding:.6rem 1rem;margin-bottom:.4rem;font-size:14px;color:#A32D2D;text-align:left;line-height:1.5;}
+  .restart-btn{margin-top:1.25rem;padding:.75rem 2rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--ink);font-size:15px;cursor:pointer;font-family:inherit;}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-title">Greek <span>Must Know Words</span></div>
+  <div style="font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:.1em;font-family:'Barlow Condensed',sans-serif">Units 1–6 · EN → GR</div>
+</nav>
+<div class="cat-bar">
+  <button class="cat-btn active" id="cat-greetings" onclick="setCategory('greetings')">Greetings</button>
+  <button class="cat-btn"        id="cat-questions" onclick="setCategory('questions')">Questions</button>
+  <button class="cat-btn"        id="cat-family"    onclick="setCategory('family')">Family</button>
+  <button class="cat-btn"        id="cat-jobs"      onclick="setCategory('jobs')">Jobs</button>
+  <button class="cat-btn"        id="cat-transport" onclick="setCategory('transport')">Transport</button>
+  <button class="cat-btn"        id="cat-places"    onclick="setCategory('places')">Places</button>
+  <button class="cat-btn"        id="cat-everyday"  onclick="setCategory('everyday')">Everyday</button>
+  <button class="cat-btn"        id="cat-all"       onclick="setCategory('all')">All mixed</button>
+  <button class="cat-btn"        id="cat-ref"       onclick="setCategory('ref')">Reference</button>
+</div>
+<div class="score-bar" id="score-bar">
+  <div class="score-card"><div class="score-label">Correct</div><div class="score-val" id="sc">0</div></div>
+  <div class="score-card"><div class="score-label">Wrong</div><div class="score-val" id="sw">0</div></div>
+  <div class="score-card"><div class="score-label">Streak</div><div class="score-val" id="ss">0</div></div>
+</div>
+<div class="wrap">
+  <div id="quiz-view">
+    <div class="rule-box" id="rule-box"></div>
+    <div class="progress" id="prog">Question 1</div>
+    <div class="q-card">
+      <div class="retry-badge" id="retry-badge" style="display:none">↩ Try again</div>
+      <div class="later-badge" id="later-badge" style="display:none">🔁 Review</div>
+      <div class="q-badge" id="qbadge"></div>
+      <div class="q-hint">How do you say this in Greek?</div>
+      <div class="q-main" id="qmain">—</div>
+      <div class="q-sub"  id="qsub"></div>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="fb" style="display:none"></div>
+    <button class="next-btn" id="nb" style="display:none" onclick="nextQ()">Next →</button>
+  </div>
+  <div id="ref-view" style="display:none">
+    <div class="ref-section"><div class="ref-title">Greetings &amp; Phrases</div><div class="ref-grid" id="ref-greetings"></div></div>
+    <div class="ref-section"><div class="ref-title">Question Words</div><div class="ref-grid" id="ref-questions"></div></div>
+    <div class="ref-section"><div class="ref-title">Family &amp; Marital Status</div><div class="ref-grid" id="ref-family"></div></div>
+    <div class="ref-section"><div class="ref-title">Jobs / Professions</div><div class="ref-grid" id="ref-jobs"></div></div>
+    <div class="ref-section"><div class="ref-title">Transport</div><div class="ref-grid" id="ref-transport"></div></div>
+    <div class="ref-section"><div class="ref-title">Places in the city</div><div class="ref-grid" id="ref-places"></div></div>
+    <div class="ref-section"><div class="ref-title">Everyday Words &amp; Verbs</div><div class="ref-grid" id="ref-everyday"></div></div>
+    <button class="ref-back-btn" onclick="backFromRef()">← Back to practice</button>
+  </div>
+  <div id="finish-view" style="display:none">
+    <div class="finish-screen">
+      <h2 id="fin-msg"></h2>
+      <p id="fin-score" style="color:var(--muted);font-size:15px;margin-bottom:.5rem"></p>
+      <div id="fin-mistakes" style="margin-top:1rem;text-align:left"></div>
+      <button class="restart-btn" onclick="restartCurrent()">Practice again →</button>
+    </div>
+  </div>
+</div>
+<script>
+const VOCAB=[
+  // GREETINGS
+  {en:'Hello / Bye (informal)',gr:'Γεια σου',cat:'greetings'},
+  {en:'Hello / Bye (formal or plural)',gr:'Γεια σας',cat:'greetings'},
+  {en:'Good morning',gr:'Καλημέρα',cat:'greetings'},
+  {en:'Good afternoon / evening',gr:'Καλησπέρα',cat:'greetings'},
+  {en:'Good night',gr:'Καληνύχτα',cat:'greetings'},
+  {en:'Goodbye',gr:'Αντίο',cat:'greetings'},
+  {en:'See you later',gr:'Τα λέμε',cat:'greetings'},
+  {en:'Nice to meet you',gr:'Χαίρω πολύ',cat:'greetings'},
+  {en:'What is your name?',gr:'Πώς σε λένε;',cat:'greetings'},
+  {en:'My name is…',gr:'Με λένε…',cat:'greetings'},
+  {en:'Where are you from?',gr:'Από πού είσαι;',cat:'greetings'},
+  {en:'How are you? (informal)',gr:'Τι κάνεις;',cat:'greetings'},
+  {en:'How are you? (formal/pl)',gr:'Τι κάνετε;',cat:'greetings'},
+  {en:'Fine / Good',gr:'Καλά',cat:'greetings'},
+  {en:'Great / Just fine',gr:'Μια χαρά',cat:'greetings'},
+  {en:'So-so',gr:'Έτσι κι έτσι',cat:'greetings'},
+  {en:'Not so good',gr:'Όχι και τόσο καλά',cat:'greetings'},
+  {en:'Sorry / Excuse me',gr:'Συγνώμη',cat:'greetings'},
+  {en:'Thank you',gr:'Ευχαριστώ',cat:'greetings'},
+  {en:'You\'re welcome / Please',gr:'Παρακαλώ',cat:'greetings'},
+  {en:'Yes',gr:'Ναι',cat:'greetings'},
+  {en:'No',gr:'Όχι',cat:'greetings'},
+  {en:'OK / Alright',gr:'Εντάξει',cat:'greetings'},
+  {en:'I don\'t understand',gr:'Δεν καταλαβαίνω',cat:'greetings'},
+  {en:'I speak a little Greek',gr:'Μιλάω λίγο ελληνικά',cat:'greetings'},
+  {en:'Do you speak English?',gr:'Μιλάτε αγγλικά;',cat:'greetings'},
+  {en:'I am from…',gr:'Είμαι από…',cat:'greetings'},
+  {en:'I live in…',gr:'Μένω σε…',cat:'greetings'},
+  {en:'Nice! / How lovely!',gr:'Πολύ ωραία!',cat:'greetings'},
+  {en:'Of course',gr:'Βέβαια',cat:'greetings'},
+
+  // QUESTION WORDS
+  {en:'Where?',gr:'Πού;',cat:'questions'},
+  {en:'Where from?',gr:'Από πού;',cat:'questions'},
+  {en:'Where to? / Where are you going?',gr:'Πού πας / πάτε;',cat:'questions'},
+  {en:'What?',gr:'Τι;',cat:'questions'},
+  {en:'Who? (masculine)',gr:'Ποιος;',cat:'questions'},
+  {en:'Who? (feminine)',gr:'Ποια;',cat:'questions'},
+  {en:'Who? (neuter)',gr:'Ποιο;',cat:'questions'},
+  {en:'How?',gr:'Πώς;',cat:'questions'},
+  {en:'How much?',gr:'Πόσο;',cat:'questions'},
+  {en:'How many? (plural)',gr:'Πόσα / Πόσοι;',cat:'questions'},
+  {en:'When?',gr:'Πότε;',cat:'questions'},
+  {en:'How often?',gr:'Κάθε πότε;',cat:'questions'},
+  {en:'Why?',gr:'Γιατί;',cat:'questions'},
+  {en:'With whom?',gr:'Με ποιον / ποια;',cat:'questions'},
+  {en:'What time is it?',gr:'Τι ώρα είναι;',cat:'questions'},
+  {en:'How much does it cost?',gr:'Πόσο κάνει;',cat:'questions'},
+  {en:'Do you have…?',gr:'Έχεις / Έχετε…;',cat:'questions'},
+  {en:'Where do you live?',gr:'Πού μένεις;',cat:'questions'},
+  {en:'What do you do for work?',gr:'Τι δουλειά κάνεις;',cat:'questions'},
+  {en:'Are you married?',gr:'Είσαι παντρεμένος/-η;',cat:'questions'},
+  {en:'Do you have children?',gr:'Έχεις παιδιά;',cat:'questions'},
+  {en:'What is your phone number?',gr:'Ποιο είναι το τηλέφωνό σου;',cat:'questions'},
+  {en:'Where does it go? (transport)',gr:'Πού πάει;',cat:'questions'},
+  {en:'Does it pass through the centre?',gr:'Περνάει από το κέντρο;',cat:'questions'},
+
+  // FAMILY
+  {en:'the husband / man',gr:'ο άντρας',cat:'family'},
+  {en:'the wife / woman',gr:'η γυναίκα',cat:'family'},
+  {en:'the father',gr:'ο πατέρας',cat:'family'},
+  {en:'the mother',gr:'η μητέρα',cat:'family'},
+  {en:'dad (informal)',gr:'ο μπαμπάς',cat:'family'},
+  {en:'mum (informal)',gr:'η μαμά',cat:'family'},
+  {en:'the son',gr:'ο γιος',cat:'family'},
+  {en:'the daughter',gr:'η κόρη',cat:'family'},
+  {en:'the child',gr:'το παιδί',cat:'family'},
+  {en:'the children',gr:'τα παιδιά',cat:'family'},
+  {en:'the brother',gr:'ο αδερφός',cat:'family'},
+  {en:'the sister',gr:'η αδερφή',cat:'family'},
+  {en:'the siblings',gr:'τα αδέρφια',cat:'family'},
+  {en:'the grandfather',gr:'ο παππούς',cat:'family'},
+  {en:'the grandmother',gr:'η γιαγιά',cat:'family'},
+  {en:'the parents',gr:'οι γονείς',cat:'family'},
+  {en:'the boy',gr:'το αγόρι',cat:'family'},
+  {en:'the girl',gr:'το κορίτσι',cat:'family'},
+  {en:'the family',gr:'η οικογένεια',cat:'family'},
+  {en:'the friend (m)',gr:'ο φίλος',cat:'family'},
+  {en:'the friend (f)',gr:'η φίλη',cat:'family'},
+  {en:'married (m/f)',gr:'παντρεμένος/-η',cat:'family'},
+  {en:'single / free (m/f)',gr:'ελεύθερος/-η',cat:'family'},
+  {en:'divorced (m/f)',gr:'χωρισμένος/-η',cat:'family'},
+
+  // JOBS
+  {en:'the doctor',gr:'ο/η γιατρός',cat:'jobs'},
+  {en:'the teacher — primary school (m)',gr:'ο δάσκαλος',cat:'jobs'},
+  {en:'the teacher — primary school (f)',gr:'η δασκάλα',cat:'jobs'},
+  {en:'the teacher — secondary school (m)',gr:'ο καθηγητής',cat:'jobs'},
+  {en:'the teacher — secondary school (f)',gr:'η καθηγήτρια',cat:'jobs'},
+  {en:'the waiter',gr:'ο σερβιτόρος',cat:'jobs'},
+  {en:'the waitress',gr:'η σερβιτόρα',cat:'jobs'},
+  {en:'the cook (m)',gr:'ο μάγειρας',cat:'jobs'},
+  {en:'the cook (f)',gr:'η μαγείρισσα',cat:'jobs'},
+  {en:'the nurse (m)',gr:'ο νοσοκόμος',cat:'jobs'},
+  {en:'the nurse (f)',gr:'η νοσοκόμα',cat:'jobs'},
+  {en:'the electrician',gr:'ο ηλεκτρολόγος',cat:'jobs'},
+  {en:'the driver',gr:'ο οδηγός',cat:'jobs'},
+  {en:'the mechanic / engineer',gr:'ο μηχανικός',cat:'jobs'},
+  {en:'the university student (m)',gr:'ο φοιτητής',cat:'jobs'},
+  {en:'the university student (f)',gr:'η φοιτήτρια',cat:'jobs'},
+  {en:'the lawyer',gr:'ο/η δικηγόρος',cat:'jobs'},
+  {en:'the actor / actress',gr:'ο/η ηθοποιός',cat:'jobs'},
+  {en:'the employee / clerk',gr:'ο/η υπάλληλος',cat:'jobs'},
+  {en:'the cashier',gr:'ο/η ταμίας',cat:'jobs'},
+  {en:'the architect',gr:'ο/η αρχιτέκτονας',cat:'jobs'},
+  {en:'the secretary',gr:'η γραμματέας',cat:'jobs'},
+  {en:'the hairdresser (m)',gr:'ο κομμωτής',cat:'jobs'},
+  {en:'the hairdresser (f)',gr:'η κομμώτρια',cat:'jobs'},
+  {en:'the vet',gr:'ο/η κτηνίατρος',cat:'jobs'},
+  {en:'the dentist',gr:'ο/η οδοντίατρος',cat:'jobs'},
+  {en:'unemployed (m/f)',gr:'άνεργος / άνεργη',cat:'jobs'},
+  {en:'I work at / in…',gr:'Δουλεύω σε…',cat:'jobs'},
+  {en:'I am looking for work',gr:'Ψάχνω για δουλειά',cat:'jobs'},
+
+  // TRANSPORT
+  {en:'the bus',gr:'το λεωφορείο',cat:'transport'},
+  {en:'the metro / underground',gr:'το μετρό',cat:'transport'},
+  {en:'the trolleybus',gr:'το τρόλεϊ',cat:'transport'},
+  {en:'the tram',gr:'το τραμ',cat:'transport'},
+  {en:'the plane',gr:'το αεροπλάνο',cat:'transport'},
+  {en:'the train',gr:'το τρένο',cat:'transport'},
+  {en:'the car',gr:'το αυτοκίνητο',cat:'transport'},
+  {en:'the taxi',gr:'το ταξί',cat:'transport'},
+  {en:'the bicycle',gr:'το ποδήλατο',cat:'transport'},
+  {en:'the motorbike',gr:'η μηχανή',cat:'transport'},
+  {en:'the electric train (Athens)',gr:'ο ηλεκτρικός',cat:'transport'},
+  {en:'on foot',gr:'με τα πόδια',cat:'transport'},
+  {en:'the stop (bus/tram etc.)',gr:'η στάση',cat:'transport'},
+  {en:'the station',gr:'ο σταθμός',cat:'transport'},
+  {en:'the ticket',gr:'το εισιτήριο',cat:'transport'},
+  {en:'the airport',gr:'το αεροδρόμιο',cat:'transport'},
+  {en:'I go by…',gr:'Πάω με…',cat:'transport'},
+  {en:'How often does it come?',gr:'Κάθε πότε περνάει;',cat:'transport'},
+  {en:'How much is the ticket?',gr:'Πόσο κάνει το εισιτήριο;',cat:'transport'},
+
+  // PLACES
+  {en:'the bank',gr:'η τράπεζα',cat:'places'},
+  {en:'the pharmacy',gr:'το φαρμακείο',cat:'places'},
+  {en:'the hospital',gr:'το νοσοκομείο',cat:'places'},
+  {en:'the school',gr:'το σχολείο',cat:'places'},
+  {en:'the theatre',gr:'το θέατρο',cat:'places'},
+  {en:'the museum',gr:'το μουσείο',cat:'places'},
+  {en:'the hotel',gr:'το ξενοδοχείο',cat:'places'},
+  {en:'the restaurant',gr:'το εστιατόριο',cat:'places'},
+  {en:'the taverna',gr:'η ταβέρνα',cat:'places'},
+  {en:'the kiosk / newsstand',gr:'το περίπτερο',cat:'places'},
+  {en:'the supermarket',gr:'το σούπερ μάρκετ',cat:'places'},
+  {en:'the shop / store',gr:'το μαγαζί',cat:'places'},
+  {en:'the café',gr:'το καφενείο / καφέ',cat:'places'},
+  {en:'the square',gr:'η πλατεία',cat:'places'},
+  {en:'the road / street',gr:'ο δρόμος',cat:'places'},
+  {en:'the city centre',gr:'το κέντρο',cat:'places'},
+  {en:'the neighbourhood',gr:'η γειτονιά',cat:'places'},
+  {en:'the park',gr:'το πάρκο',cat:'places'},
+  {en:'the cinema',gr:'ο κινηματογράφος',cat:'places'},
+  {en:'the post office',gr:'το ταχυδρομείο',cat:'places'},
+  {en:'the police station',gr:'η αστυνομία',cat:'places'},
+  {en:'the bakery',gr:'ο φούρνος',cat:'places'},
+  {en:'the market / street market',gr:'η λαϊκή',cat:'places'},
+  {en:'the church',gr:'η εκκλησία',cat:'places'},
+  {en:'the port / harbour',gr:'το λιμάνι',cat:'places'},
+
+  // EVERYDAY
+  {en:'the house / home',gr:'το σπίτι',cat:'everyday'},
+  {en:'the room',gr:'το δωμάτιο',cat:'everyday'},
+  {en:'the telephone / phone',gr:'το τηλέφωνο',cat:'everyday'},
+  {en:'the mobile phone',gr:'το κινητό',cat:'everyday'},
+  {en:'the address',gr:'η διεύθυνση',cat:'everyday'},
+  {en:'the name',gr:'το όνομα',cat:'everyday'},
+  {en:'the surname',gr:'το επώνυμο',cat:'everyday'},
+  {en:'the language',gr:'η γλώσσα',cat:'everyday'},
+  {en:'the nationality',gr:'η εθνικότητα',cat:'everyday'},
+  {en:'the job / work',gr:'η δουλειά',cat:'everyday'},
+  {en:'the money',gr:'τα λεφτά',cat:'everyday'},
+  {en:'the euro',gr:'το ευρώ',cat:'everyday'},
+  {en:'the day',gr:'η μέρα',cat:'everyday'},
+  {en:'the week',gr:'η εβδομάδα',cat:'everyday'},
+  {en:'the morning',gr:'το πρωί',cat:'everyday'},
+  {en:'the evening',gr:'το βράδυ',cat:'everyday'},
+  {en:'today',gr:'σήμερα',cat:'everyday'},
+  {en:'tomorrow',gr:'αύριο',cat:'everyday'},
+  {en:'yesterday',gr:'χθες',cat:'everyday'},
+  {en:'now',gr:'τώρα',cat:'everyday'},
+  {en:'always',gr:'πάντα',cat:'everyday'},
+  {en:'never',gr:'ποτέ',cat:'everyday'},
+  {en:'every day',gr:'κάθε μέρα',cat:'everyday'},
+  {en:'a lot / very',gr:'πολύ',cat:'everyday'},
+  {en:'a little',gr:'λίγο',cat:'everyday'},
+  {en:'not at all',gr:'καθόλου',cat:'everyday'},
+  {en:'here',gr:'εδώ',cat:'everyday'},
+  {en:'there',gr:'εκεί',cat:'everyday'},
+  {en:'also / too',gr:'και / επίσης',cat:'everyday'},
+  {en:'but',gr:'αλλά',cat:'everyday'},
+  {en:'because',gr:'γιατί / επειδή',cat:'everyday'},
+  {en:'big / large (m/f/n)',gr:'μεγάλος/-η/-ο',cat:'everyday'},
+  {en:'small (m/f/n)',gr:'μικρός/-ή/-ό',cat:'everyday'},
+  {en:'good (m/f/n)',gr:'καλός/-ή/-ό',cat:'everyday'},
+  {en:'nice / beautiful (m/f/n)',gr:'ωραίος/-α/-ο',cat:'everyday'},
+  {en:'new (m/f/n)',gr:'καινούριος/-α/-ο',cat:'everyday'},
+  {en:'old — for objects (m/f/n)',gr:'παλιός/-ά/-ό',cat:'everyday'},
+  {en:'close / near',gr:'κοντά',cat:'everyday'},
+  {en:'far',gr:'μακριά',cat:'everyday'},
+  {en:'easy',gr:'εύκολο',cat:'everyday'},
+  {en:'difficult',gr:'δύσκολο',cat:'everyday'},
+  {en:'I have',gr:'έχω',cat:'everyday'},
+  {en:'I want',gr:'θέλω',cat:'everyday'},
+  {en:'I know',gr:'ξέρω',cat:'everyday'},
+  {en:'I understand',gr:'καταλαβαίνω',cat:'everyday'},
+  {en:'I go',gr:'πάω',cat:'everyday'},
+  {en:'I work',gr:'δουλεύω',cat:'everyday'},
+  {en:'I study',gr:'σπουδάζω',cat:'everyday'},
+  {en:'I speak',gr:'μιλάω',cat:'everyday'},
+  {en:'I live / stay',gr:'μένω',cat:'everyday'},
+  {en:'I look for / I search',gr:'ψάχνω',cat:'everyday'},
+  {en:'I see / I watch',gr:'βλέπω',cat:'everyday'},
+  {en:'I eat',gr:'τρώω',cat:'everyday'},
+  {en:'I drink',gr:'πίνω',cat:'everyday'},
+  {en:'I come',gr:'έρχομαι',cat:'everyday'},
+  {en:'I leave / go out',gr:'βγαίνω',cat:'everyday'},
+];
+
+let curCat='greetings',q=[],idx=0,cor=0,wr=0,str=0,mist=[],answered=false;
+function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
+function setScores(a,b,c){['sc','sw','ss'].forEach((id,i)=>document.getElementById(id).textContent=[a,b,c][i]);}
+function sched(item){q.splice(idx+1,0,{...item,_retry:'immediate'});const d=Math.min(3+Math.floor(Math.random()*3),q.length-idx-1);q.splice(idx+2+d,0,{...item,_retry:'delayed'});}
+function failRetry(item){const r=item._retry;if(!r)sched(item);else if(r==='immediate'){q.splice(idx+1,0,{...item,_retry:'immediate'});q.splice(Math.min(idx+4,q.length),0,{...item,_retry:'delayed'});}else q.splice(idx+1,0,{...item,_retry:'immediate'});}
+
+const LABELS={greetings:'GREETINGS',questions:'QUESTION WORDS',family:'FAMILY',jobs:'JOBS',transport:'TRANSPORT',places:'PLACES',everyday:'EVERYDAY',all:'ALL MIXED'};
+const RULES={
+  greetings:'See the <strong>English</strong> — choose the correct <strong>Greek</strong> greeting or phrase.',
+  questions:'See the <strong>English</strong> — choose the correct <strong>Greek</strong> question word.',
+  family:   'See the <strong>English</strong> — choose the correct <strong>Greek</strong> family word.',
+  jobs:     'See the <strong>English</strong> — choose the correct <strong>Greek</strong> job title.',
+  transport:'See the <strong>English</strong> — choose the correct <strong>Greek</strong> transport word.',
+  places:   'See the <strong>English</strong> — choose the correct <strong>Greek</strong> place.',
+  everyday: 'See the <strong>English</strong> — choose the correct <strong>Greek</strong> everyday word, adjective or verb.',
+  all:      'All categories mixed. <strong>English → Greek</strong>. Wrong answers come back twice!',
+};
+
+function setCategory(cat){
+  curCat=cat;
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('cat-'+cat).classList.add('active');
+  ['ref-view','quiz-view','finish-view'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('score-bar').style.display='flex';
+  if(cat==='ref'){document.getElementById('score-bar').style.display='none';buildRef();document.getElementById('ref-view').style.display='block';return;}
+  document.getElementById('rule-box').innerHTML=RULES[cat]||'';
+  document.getElementById('quiz-view').style.display='block';
+  startQuiz();
+}
+function backFromRef(){document.getElementById('ref-view').style.display='none';document.getElementById('score-bar').style.display='flex';setCategory(curCat==='ref'?'greetings':curCat);}
+function restartCurrent(){document.getElementById('finish-view').style.display='none';startQuiz();}
+
+function startQuiz(){
+  const pool=curCat==='all'?VOCAB:VOCAB.filter(v=>v.cat===curCat);
+  q=shuf([...pool]);idx=0;cor=0;wr=0;str=0;mist=[];answered=false;
+  setScores(0,0,0);
+  document.getElementById('finish-view').style.display='none';
+  document.getElementById('quiz-view').style.display='block';
+  showQ();
+}
+
+function showQ(){
+  answered=false;
+  const item=q[idx];const r=item._retry||null;
+  document.getElementById('retry-badge').style.display=r==='immediate'?'block':'none';
+  document.getElementById('later-badge').style.display=r==='delayed'?'block':'none';
+  document.getElementById('fb').style.display='none';
+  document.getElementById('nb').style.display='none';
+  document.getElementById('prog').textContent='Question '+(idx+1)+' of '+q.length;
+  document.getElementById('qbadge').textContent=LABELS[item.cat]||'VOCAB';
+  document.getElementById('qmain').textContent=item.en;
+  document.getElementById('qsub').textContent='';
+
+  const catPool=VOCAB.filter(v=>v.cat===item.cat&&v.gr!==item.gr);
+  const pool=(catPool.length>=3?catPool:VOCAB.filter(v=>v.gr!==item.gr));
+  const opts=shuf([item.gr,...shuf(pool).slice(0,3).map(v=>v.gr)]);
+  const cc=document.getElementById('choices');cc.innerHTML='';
+  opts.forEach(opt=>{const b=document.createElement('button');b.className='choice-btn';b.textContent=opt;b.onclick=()=>pick(opt,item);cc.appendChild(b);});
+}
+
+function pick(chosen,item){
+  if(answered)return;answered=true;
+  const ok=chosen===item.gr;
+  document.querySelectorAll('.choice-btn').forEach(b=>{b.disabled=true;if(b.textContent===item.gr)b.classList.add(ok?'correct':'reveal');else if(b.textContent===chosen&&!ok)b.classList.add('wrong');});
+  const fb=document.getElementById('fb');fb.style.display='block';
+  if(ok){cor++;str++;fb.className='feedback correct';fb.innerHTML='✓ Correct! <strong>'+item.gr+'</strong>';document.getElementById('nb').textContent='Next →';}
+  else{wr++;str=0;fb.className='feedback wrong';fb.innerHTML='✗ It\'s <strong>'+item.gr+'</strong>';mist.push(item);failRetry(item);document.getElementById('nb').textContent='Try again →';}
+  setScores(cor,wr,str);document.getElementById('nb').style.display='block';
+}
+function nextQ(){idx++;if(idx>=q.length)showFinish();else showQ();}
+
+function buildRef(){
+  ['greetings','questions','family','jobs','transport','places','everyday'].forEach(cat=>{
+    const el=document.getElementById('ref-'+cat);if(!el)return;el.innerHTML='';
+    VOCAB.filter(v=>v.cat===cat).forEach(v=>{const d=document.createElement('div');d.className='ref-row';d.innerHTML='<span class="ref-en">'+v.en+'</span><span class="ref-gr">'+v.gr+'</span>';el.appendChild(d);});
+  });
+}
+
+function showFinish(){
+  document.getElementById('quiz-view').style.display='none';
+  const tot=cor+wr,pct=tot?Math.round(cor/tot*100):0;
+  document.getElementById('fin-msg').textContent=pct>=90?'Excellent! 🎉':pct>=70?'Good work! 👍':'Keep going! 📚';
+  document.getElementById('fin-score').textContent=cor+' correct out of '+tot+' ('+pct+'%)';
+  const mm=document.getElementById('fin-mistakes');mm.innerHTML='';
+  if(mist.length){const hdr=document.createElement('p');hdr.style.cssText='font-size:13px;color:var(--muted);margin-bottom:8px';hdr.textContent='Words to review:';mm.appendChild(hdr);const seen=new Set();mist.forEach(m=>{if(!seen.has(m.gr)){seen.add(m.gr);const d=document.createElement('div');d.className='mistake-item';d.innerHTML=m.en+' → <strong>'+m.gr+'</strong>';mm.appendChild(d);}});}
+  else mm.innerHTML='<p style="color:#3B6D11;font-size:14px">Perfect — no mistakes!</p>';
+  document.getElementById('finish-view').style.display='block';
+}
+
+setCategory('greetings');
+</script>
+</body>
+</html>
